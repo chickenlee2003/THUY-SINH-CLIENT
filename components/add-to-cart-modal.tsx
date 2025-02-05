@@ -1,0 +1,149 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+interface AddToCartModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  product: {
+    productId: number;
+    productName: string;
+    productPrice: number;
+    images: Array<{ imageId: number; imageUrl: string }>;
+    productQuantity: number;
+    productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+  };
+}
+
+export function AddToCartModal({
+  isOpen,
+  onClose,
+  product,
+}: AddToCartModalProps) {
+  const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    setTotalPrice(product.productPrice * quantity);
+  }, [product.productPrice, quantity]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>{product.productName}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 rounded-full"
+              onClick={onClose}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid gap-6">
+          <div className="flex gap-4">
+            <div className="relative h-24 w-24 rounded-lg border overflow-hidden">
+              <Image
+                src={
+                  product.images && product.images.length > 0
+                    ? product.images[0].imageUrl
+                    : "/placeholder.svg"
+                }
+                alt={product.productName}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div className="flex-1 space-y-2">
+              <div>
+                <div className="text-sm text-gray-500">Price</div>
+                <div className="text-teal-600">₹{product.productPrice}</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-500">Status</div>
+                <div
+                  className={cn(
+                    "text-sm font-medium",
+                    product.productStatus === "AVAILABLE"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  )}
+                >
+                  {product.productStatus}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Quantity</span>
+              <span className="text-sm text-gray-500">
+                ({product.productQuantity} available)
+              </span>
+            </div>
+            <div className="flex items-center">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-r-none"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                -
+              </Button>
+              <div className="w-20 border-y px-4 py-2 text-center">
+                {quantity}
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-l-none"
+                onClick={() =>
+                  setQuantity(Math.min(product.productQuantity, quantity + 1))
+                }
+              >
+                +
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-t pt-4">
+              <span className="text-sm text-gray-500">Total Price</span>
+              <span className="text-xl font-bold text-teal-600">
+                ₹{totalPrice}
+              </span>
+            </div>
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => {
+                // Add to cart logic here
+                onClose();
+              }}
+              disabled={product.productStatus !== "AVAILABLE"}
+            >
+              {product.productStatus === "AVAILABLE"
+                ? "Add to cart"
+                : "Out of Stock"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
