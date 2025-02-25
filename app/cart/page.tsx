@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface CartItem {
   id: string;
@@ -16,31 +16,31 @@ interface CartItem {
 
 const mockCart: CartItem[] = [
   {
-    id: '1',
-    name: 'Betta Fish Female',
+    id: "1",
+    name: "Betta Fish Female",
     price: 500.0,
     quantity: 2,
-    size: 'Small',
-    image: '/placeholder.svg',
-    availableSizes: ['Small', 'Medium', 'Large'],
+    size: "Small",
+    image: "/placeholder.svg",
+    availableSizes: ["Small", "Medium", "Large"],
   },
   {
-    id: '2',
-    name: 'Crown Tail Betta',
+    id: "2",
+    name: "Crown Tail Betta",
     price: 800.0,
     quantity: 1,
-    size: 'Medium',
-    image: '/placeholder.svg',
-    availableSizes: ['Small', 'Medium', 'Large'],
+    size: "Medium",
+    image: "/placeholder.svg",
+    availableSizes: ["Small", "Medium", "Large"],
   },
   {
-    id: '3',
-    name: 'Full Moon Betta Fish',
+    id: "3",
+    name: "Full Moon Betta Fish",
     price: 600.0,
     quantity: 3,
-    size: 'Large',
-    image: '/placeholder.svg',
-    availableSizes: ['Small', 'Medium', 'Large'],
+    size: "Large",
+    image: "/placeholder.svg",
+    availableSizes: ["Small", "Medium", "Large"],
   },
 ];
 
@@ -69,11 +69,14 @@ export default function CartPage() {
     setCart(cart.filter((item) => item.id !== id));
   };
 
-  const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Your Shopping Cart</h1>
+      <h1 className="text-2xl font-bold mb-4">Giỏ hàng của bạn</h1>
       {cart.length > 0 ? (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -93,7 +96,9 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1 space-y-2">
                   <h2 className="text-lg font-medium">{item.name}</h2>
-                  <p className="text-teal-600 font-semibold">₹{item.price.toFixed(2)}</p>
+                  <p className="text-teal-600 font-semibold">
+                    ₹{item.price.toFixed(2)}
+                  </p>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-500">Size:</span>
                     <select
@@ -117,7 +122,9 @@ export default function CartPage() {
                     >
                       -
                     </Button>
-                    <div className="w-12 border-y text-center">{item.quantity}</div>
+                    <div className="w-12 border-y text-center">
+                      {item.quantity}
+                    </div>
                     <Button
                       variant="outline"
                       size="icon"
@@ -133,28 +140,32 @@ export default function CartPage() {
                   size="sm"
                   onClick={() => removeFromCart(item.id)}
                 >
-                  Remove
+                  Xoá
                 </Button>
               </div>
             ))}
           </div>
 
           <div className="border-t pt-4 flex justify-between items-center">
-            <span className="text-lg font-bold">Total Price</span>
-            <span className="text-xl font-bold text-teal-600">₹{totalPrice.toFixed(2)}</span>
+            <span className="text-lg font-bold">Tổng tiền</span>
+            <span className="text-xl font-bold text-teal-600">
+              ₹{totalPrice.toFixed(2)}
+            </span>
           </div>
 
           <div className="flex gap-4">
             <Button className="flex-1 bg-teal-600 hover:bg-teal-700 text-white">
-              Proceed to Checkout
+              Thanh toán
             </Button>
             <Button variant="outline" className="flex-1">
-              Continue Shopping
+              Tiếp tục mua hàng
             </Button>
           </div>
         </div>
       ) : (
-        <p className="text-gray-600">Your cart is empty. Add some products to get started!</p>
+        <p className="text-gray-600">
+          Không có sản phẩm nào trong giỏ hàng của bạn.
+        </p>
       )}
     </div>
   );

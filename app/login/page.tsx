@@ -1,36 +1,40 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import userService from "@/services/userService";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // login logic
-    // Fake login logic: Check for hardcoded admin credentials
-    if (email === 'admin' && password === 'admin') {
-      // Simulate successful login
-      router.push('/');
-    } else {
-      // Display an error message
-      setError('Invalid email or password. Please try again.');
+    try {
+      const response = await userService.login({ email, password });
+
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token); // giả sử token được trả về trong response
+        router.push("/"); // Chuyển hướng đến trang chủ
+      } else {
+        setError("Email hoặc mật khẩu không chính xác. Vui lòng thử lại.");
+      }
+    } catch (err) {
+      console.error("Lỗi đăng nhập", err);
+      setError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
     }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Image */}
+      {/* Phía trái - Hình ảnh */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img
           src="/placeholder.svg"
@@ -40,7 +44,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Right side - Login form */}
+      {/* Phía phải - Form đăng nhập */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full space-y-8">
           {/* Logo */}
@@ -51,9 +55,11 @@ export default function LoginPage() {
               className="h-12 w-12 text-teal-600"
             />
             <h2 className="mt-6 text-3xl font-bold text-teal-600">
-              WELCOME BACK!
+              CHÀO MỪNG TRỞ LẠI!
             </h2>
-            <p className="mt-2 text-sm text-gray-600">Login to your account.</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Đăng nhập vào tài khoản của bạn.
+            </p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -64,7 +70,10 @@ export default function LoginPage() {
             )}
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <Input
@@ -73,24 +82,27 @@ export default function LoginPage() {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="johndoe@example.com"
+                  placeholder="abc@gmail.com"
                   required
                   className="mt-1"
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Mật khẩu
                 </label>
                 <div className="relative mt-1">
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
+                    placeholder="Mật khẩu"
                     required
                   />
                   <button
@@ -110,15 +122,18 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Checkbox id="remember" className="border-gray-300" />
-                  <label htmlFor="remember" className="ml-2 block text-sm text-gray-700">
-                    Remember Me
+                  <label
+                    htmlFor="remember"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
+                    Ghi nhớ tài khoản
                   </label>
                 </div>
                 <Link
                   href="/forgot-password"
                   className="text-sm text-teal-600 hover:text-teal-500"
                 >
-                  Forgot password?
+                  Quên mật khẩu?
                 </Link>
               </div>
 
@@ -126,7 +141,7 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full bg-teal-600 hover:bg-teal-700"
               >
-                Login
+                Đăng nhập
               </Button>
             </div>
           </form>
@@ -138,34 +153,30 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  Or Login With
+                  Hoặc đăng nhập bằng
                 </span>
               </div>
             </div>
 
             <div className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-              >
+              <Button type="button" variant="outline" className="w-full">
                 <img
                   src="/placeholder.svg"
                   alt="Google"
                   className="h-5 w-5 mr-2"
                 />
-                Continue with Google
+                Tiếp tục với Google
               </Button>
             </div>
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-600">
-            Do not have an account?{' '}
+            Bạn chưa có tài khoản?{" "}
             <Link
               href="/register"
               className="font-medium text-teal-600 hover:text-teal-500"
             >
-              Register Now
+              Đăng ký ngay
             </Link>
           </p>
         </div>

@@ -1,31 +1,35 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { X } from 'lucide-react'
+import { useState } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface QuickAddModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   product: {
-    id: string
-    name: string
-    price: number
-    image: string
-    stock: number
-  }
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    stock: number;
+  };
 }
 
-export function QuickAddModal({ isOpen, onClose, product }: QuickAddModalProps) {
-  const [quantity, setQuantity] = useState(30)
-  const totalPrice = product.price * quantity
+export function QuickAddModal({
+  isOpen,
+  onClose,
+  product,
+}: QuickAddModalProps) {
+  const [quantity, setQuantity] = useState(30);
+  const totalPrice = product.price * quantity;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -57,12 +61,16 @@ export function QuickAddModal({ isOpen, onClose, product }: QuickAddModalProps) 
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">Price</span>
-                <span className="text-teal-600">₹{product.price.toFixed(2)} /Pc</span>
+                <span className="text-teal-600">
+                  ₹{product.price.toFixed(2)} /Pc
+                </span>
               </div>
               <div className="mt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">Quantity</span>
-                  <span className="text-sm text-gray-500">({product.stock} available)</span>
+                  <span className="text-sm text-gray-500">
+                    ({product.stock} available)
+                  </span>
                 </div>
                 <div className="mt-2 flex items-center">
                   <Button
@@ -80,7 +88,9 @@ export function QuickAddModal({ isOpen, onClose, product }: QuickAddModalProps) 
                     variant="outline"
                     size="icon"
                     className="rounded-l-none"
-                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    onClick={() =>
+                      setQuantity(Math.min(product.stock, quantity + 1))
+                    }
                   >
                     +
                   </Button>
@@ -90,12 +100,13 @@ export function QuickAddModal({ isOpen, onClose, product }: QuickAddModalProps) 
           </div>
           <div className="flex items-center justify-between border-t pt-4">
             <span className="text-sm text-gray-500">Total Price</span>
-            <span className="text-lg font-bold text-teal-600">₹{totalPrice.toFixed(2)}</span>
+            <span className="text-lg font-bold text-teal-600">
+              ₹{totalPrice.toFixed(2)}
+            </span>
           </div>
-          <Button className="w-full">Add to cart</Button>
+          <Button className="w-full">Thêm vào giỏ hàng</Button>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

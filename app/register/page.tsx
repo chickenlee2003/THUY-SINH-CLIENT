@@ -1,27 +1,60 @@
-'use client'
-
-import { useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Eye, EyeOff } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import userService from "@/services/userService";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Add registration logic here
-    router.push('/login')
-  }
+    if (!email || !fullName || !password || !confirmPassword) {
+      toast.error("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Mật khẩu và xác nhận mật khẩu không khớp.");
+      return;
+    }
+    try {
+      const newUser = {
+        email,
+        fullName,
+        password,
+        phoneNumber: phoneNumber || null,
+      };
+      // Đảm bảo bạn đang đợi kết quả từ API
+      const response = await userService.createUser(newUser);
+      console.log("User created:", response);
+      if (response.status === 200) {
+        // Kiểm tra phản hồi từ server
+        toast.success("Đăng ký thành công! Bạn có thể đăng nhập ngay.");
+        router.push("/login");
+      } else {
+        toast.error("Đăng ký không thành công. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Image */}
+      {/* Phía trái - Hình ảnh */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img
           src="/placeholder.svg"
@@ -31,7 +64,7 @@ export default function RegisterPage() {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Right side - Registration form */}
+      {/* Phía phải - Form đăng ký */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full space-y-8">
           {/* Logo */}
@@ -42,36 +75,27 @@ export default function RegisterPage() {
               className="h-12 w-12 text-teal-600"
             />
             <h2 className="mt-6 text-3xl font-bold text-teal-600">
-              CREATE ACCOUNT
+              TẠO TÀI KHOẢN
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Register for a new account.
-            </p>
+            <p className="mt-2 text-sm text-gray-600">Đăng ký tài khoản mới.</p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid  gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                    First Name
+                  <label
+                    htmlFor="fullName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Họ và tên
                   </label>
                   <Input
-                    id="firstName"
-                    name="firstName"
+                    id="fullName"
+                    name="fullName"
                     type="text"
-                    required
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     required
                     className="mt-1"
                   />
@@ -79,29 +103,39 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email
                 </label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="johndoe@example.com"
+                  placeholder="kietlt@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   className="mt-1"
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Mật khẩu
                 </label>
                 <div className="relative mt-1">
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Mật khẩu"
                     required
                   />
                   <button
@@ -119,15 +153,20 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                  Confirm Password
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Xác nhận mật khẩu
                 </label>
                 <div className="relative mt-1">
                   <Input
                     id="confirmPassword"
                     name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Xác nhận mật khẩu"
                     required
                   />
                   <button
@@ -146,10 +185,16 @@ export default function RegisterPage() {
 
               <div className="flex items-center">
                 <Checkbox id="terms" className="border-gray-300" required />
-                <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-teal-600 hover:text-teal-500">
-                    Terms and Conditions
+                <label
+                  htmlFor="terms"
+                  className="ml-2 block text-sm text-gray-700"
+                >
+                  Tôi đồng ý với{" "}
+                  <Link
+                    href="/terms"
+                    className="text-teal-600 hover:text-teal-500"
+                  >
+                    Điều khoản và Điều kiện
                   </Link>
                 </label>
               </div>
@@ -158,7 +203,7 @@ export default function RegisterPage() {
                 type="submit"
                 className="w-full bg-teal-600 hover:bg-teal-700"
               >
-                Register
+                Đăng ký
               </Button>
             </div>
           </form>
@@ -170,39 +215,34 @@ export default function RegisterPage() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  Or Register With
+                  Hoặc đăng ký với
                 </span>
               </div>
             </div>
 
             <div className="mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-              >
+              <Button type="button" variant="outline" className="w-full">
                 <img
                   src="/placeholder.svg"
                   alt="Google"
                   className="h-5 w-5 mr-2"
                 />
-                Continue with Google
+                Tiếp tục với Google
               </Button>
             </div>
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-600">
-            Already have an account?{' '}
+            Đã có tài khoản?{" "}
             <Link
               href="/login"
               className="font-medium text-teal-600 hover:text-teal-500"
             >
-              Login Now
+              Đăng nhập ngay
             </Link>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

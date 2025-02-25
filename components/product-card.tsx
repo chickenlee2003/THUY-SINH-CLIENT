@@ -73,7 +73,7 @@ export function ProductCard({
             <div className="space-y-1 p-4">
               <h3 className="text-center font-medium">{productName}</h3>
               <p className="text-center font-semibold text-teal-600">
-                ₹{productPrice}
+                {productPrice}vnđ
               </p>
             </div>
           </CardContent>

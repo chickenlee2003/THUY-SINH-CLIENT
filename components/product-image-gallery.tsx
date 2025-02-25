@@ -28,7 +28,7 @@ export function ProductImageGallery({ images }: ProductImageGalleryProps) {
   };
 
   if (!selectedImage) {
-    return <div>No images available</div>;
+    return <div>không có hình ảnh</div>;
   }
 
   return (

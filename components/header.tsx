@@ -1,16 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Search, ShoppingCart, Heart, Home, Clock, Download, LifeBuoy, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  Home,
+  Clock,
+  Download,
+  LifeBuoy,
+  LogOut,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Mock user data
 const mockUser = {
-  name: 'Tuấn Kiệt Lê',
-  email: 'tuan.kiet@example.com',
-  avatar: '/placeholder.svg', // Replace with actual image URL
+  name: "Tuấn Kiệt Lê",
+  email: "tuan.kiet@example.com",
+  avatar: "/placeholder.svg", // Replace with actual image URL
 };
 
 export function Header() {
@@ -27,7 +36,11 @@ export function Header() {
         <div className="flex items-center justify-between gap-8">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <img src="/placeholder.svg" alt="Kolathur Fish Market" className="h-12" />
+            <img
+              src="/placeholder.svg"
+              alt="Kolathur Fish Market"
+              className="h-12"
+            />
           </Link>
 
           {/* Search Bar */}
@@ -35,7 +48,7 @@ export function Header() {
             <div className="relative">
               <input
                 type="search"
-                placeholder="I am shopping for..."
+                placeholder="TÌm kiếm ..."
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -50,7 +63,7 @@ export function Header() {
                 <Link href="/wishlist" className="hover:text-teal-600">
                   <Button variant="outline" className="flex items-center gap-2">
                     <Heart className="h-5 w-5 text-red-500" />
-                    <span>Wishlist</span>
+                    <span>Danh sách yêu thích</span>
                   </Button>
                 </Link>
 
@@ -58,8 +71,13 @@ export function Header() {
                 <div className="relative group z-50">
                   <div className="flex items-center gap-2 cursor-pointer">
                     <Avatar>
-                      <AvatarImage src={user?.avatar || ''} alt={user?.name || ''} />
-                      <AvatarFallback>{user?.name?.charAt(0) || ''}</AvatarFallback>
+                      <AvatarImage
+                        src={user?.avatar || ""}
+                        alt={user?.name || ""}
+                      />
+                      <AvatarFallback>
+                        {user?.name?.charAt(0) || ""}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="hidden md:block">
                       <p className="text-sm font-medium">{user?.name}</p>
@@ -72,28 +90,22 @@ export function Header() {
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         <Home className="w-4 h-4" />
-                        Dashboard
+                        Danh mục
                       </Link>
                       <Link
                         href="/purchase-history"
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         <Clock className="w-4 h-4" />
-                        Purchase History
+                        Lịch sử mua hàng
                       </Link>
-                      <Link
-                        href="/downloads"
-                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                      >
-                        <Download className="w-4 h-4" />
-                        Downloads
-                      </Link>
+
                       <Link
                         href="/support"
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         <LifeBuoy className="w-4 h-4" />
-                        Support Ticket
+                        Hỗ trợ
                       </Link>
                       <div className="border-t my-2" />
                       <button
@@ -101,7 +113,7 @@ export function Header() {
                         onClick={handleLogout}
                       >
                         <LogOut className="w-4 h-4" />
-                        Logout
+                        Đăng xuất
                       </button>
                     </div>
                   </div>
@@ -109,13 +121,12 @@ export function Header() {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                {/* Login/Register Links */}
                 <Link href="/login" className="hover:text-teal-600">
-                  Login
+                  Đăng nhập
                 </Link>
                 <span>/</span>
                 <Link href="/register" className="hover:text-teal-600">
-                  Registration
+                  Đăng ký
                 </Link>
               </div>
             )}
@@ -124,8 +135,8 @@ export function Header() {
             <Link href="/cart">
               <Button variant="outline" className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" />
-                <span>₹0.00</span>
-                <span className="text-xs">(0 Items)</span>
+                <span>0vnđ</span>
+                <span className="text-xs">(0 sản phẩm)</span>
               </Button>
             </Link>
           </div>
@@ -143,28 +154,40 @@ export function Header() {
             </li> */}
             <li>
               <Link href="/">
-                <Button variant="ghost" className="text-white hover:text-white hover:bg-teal-700">
-                  Home
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-white hover:bg-teal-700"
+                >
+                  Trang chủ
                 </Button>
               </Link>
             </li>
             <li>
               <Link href="/all-category">
-                <Button variant="ghost" className="text-white hover:text-white hover:bg-teal-700">
-                  All Category
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-white hover:bg-teal-700"
+                >
+                  Danh mục
                 </Button>
               </Link>
             </li>
             <li>
               <Link href="/category/aquarium-fishes">
-                <Button variant="ghost" className="text-white hover:text-white hover:bg-teal-700">
-                  Aquarium Fishes
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-white hover:bg-teal-700"
+                >
+                  Cá cảnh
                 </Button>
               </Link>
             </li>
             <li>
-              <Button variant="ghost" className="text-white hover:text-white hover:bg-teal-700">
-                Exotic Fishes
+              <Button
+                variant="ghost"
+                className="text-white hover:text-white hover:bg-teal-700"
+              >
+                Phụ kiện
               </Button>
             </li>
           </ul>

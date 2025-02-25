@@ -1,30 +1,31 @@
-import { CategorySidebar } from '@/components/category-sidebar'
-import { HeroBanner } from '@/components/hero-banner'
-import { PromoSections } from '@/components/promo-sections'
-import { CategoryBanner } from '@/components/category-banner'
-import { FeaturedProducts } from '@/components/featured-products'
-import { BestSelling } from '@/components/best-selling'
-import { KoiPond } from '@/components/koi-pond'
-import { NewProducts } from '@/components/new-products'
-import { FooterLinks } from '@/components/footer-links'
+import { CategorySidebar } from "@/components/category-sidebar";
+import { HeroBanner } from "@/components/hero-banner";
+import { PromoSections } from "@/components/promo-sections";
+import { CategoryBanner } from "@/components/category-banner";
+import { FeaturedProducts } from "@/components/featured-products";
+import { BestSelling } from "@/components/best-selling";
+import { KoiPond } from "@/components/koi-pond";
+import { NewProducts } from "@/components/new-products";
+import { FooterLinks } from "@/components/footer-links";
+import { ToastContainer } from "react-toastify";
 
 const featuredCategories = [
   {
-    title: 'KOI FISHES',
-    image: '/placeholder.svg',
-    href: '/category/koi-fishes'
+    title: "CÁ KOI",
+    image: "/placeholder.svg",
+    href: "/category/koi-fishes",
   },
   {
-    title: 'AROWANA',
-    image: '/placeholder.svg',
-    href: '/category/arowana'
+    title: "CÁ RỒNG",
+    image: "/placeholder.svg",
+    href: "/category/arowana",
   },
   {
-    title: 'MONSTER FISHES',
-    image: '/placeholder.svg',
-    href: '/category/monster-fishes'
-  }
-]
+    title: "CÁ SĂN MỒI",
+    image: "/placeholder.svg",
+    href: "/category/monster-fishes",
+  },
+];
 
 export default function Home() {
   return (
@@ -40,13 +41,13 @@ export default function Home() {
               <CategoryBanner key={category.title} {...category} />
             ))}
           </div>
-          <BestSelling /> 
-          <NewProducts />
+          <BestSelling />
+          {/* <NewProducts /> */}
           <KoiPond />
           <FooterLinks />
+          <ToastContainer />
         </div>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,33 +1,59 @@
-// File: /services/apiClient.js
-import axios from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosResponse,
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 // Khởi tạo instance của axios
-const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Lấy URL từ biến môi trường
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL, // Sử dụng biến môi trường để cấu hình base URL
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/json", // Mặc định sử dụng JSON
   },
-  timeout: 10000, // Timeout request sau 10 giây
+  timeout: 10000, // Timeout sau 10 giây
 });
 
-// Thêm interceptor xử lý request
+// Interceptor xử lý request
 apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token"); // Thêm token nếu có
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  (config: InternalAxiosRequestConfig) => {
+    // Thêm token vào header nếu có
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token"); // Lấy token từ localStorage
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error: AxiosError) => {
+    // Xử lý lỗi khi gửi request
+    return Promise.reject(error);
+  }
 );
 
-// Thêm interceptor xử lý response
+// Interceptor xử lý response
 apiClient.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    console.error("API Error:", error.response?.data || error.message);
-    return Promise.reject(error.response?.data || error.message);
+  (response: AxiosResponse) => {
+    // Trả về dữ liệu từ response
+    return response;
+  },
+  (error: AxiosError) => {
+    // Xử lý lỗi từ response
+    if (error.response) {
+      // Lỗi từ phía server (status code 4xx, 5xx)
+      console.error("API Error:", error.response.data);
+      return Promise.reject(error.response.data);
+    } else if (error.request) {
+      // Lỗi không nhận được phản hồi từ server
+      console.error("No response received:", error.request);
+      return Promise.reject({ message: "Không có phản hồi từ server." });
+    } else {
+      // Lỗi khác
+      console.error("Request setup error:", error.message);
+      return Promise.reject({ message: "Lỗi khi thiết lập request." });
+    }
   }
 );
 

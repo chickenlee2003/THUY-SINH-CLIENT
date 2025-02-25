@@ -13,42 +13,42 @@ interface Product {
 const products: Product[] = [
   {
     id: "1",
-    name: "Green Stone 1kg",
+    name: "Đá Xanh 1kg",
     price: 90.0,
     image: "/placeholder.svg",
     stock: 100,
   },
   {
     id: "2",
-    name: "Blue Stone 1kg",
+    name: "Đá Xanh Dương 1kg",
     price: 90.0,
     image: "/placeholder.svg",
     stock: 100,
   },
   {
     id: "3",
-    name: "Black stones 1kg",
+    name: "Đá Đen 1kg",
     price: 90.0,
     image: "/placeholder.svg",
     stock: 100,
   },
   {
     id: "4",
-    name: "White stones 1kg",
+    name: "Đá Trắng 1kg",
     price: 90.0,
     image: "/placeholder.svg",
     stock: 100,
   },
   {
     id: "5",
-    name: "Mixed colour stone 1kg",
+    name: "Đá Màu Hỗn Hợp 1kg",
     price: 140.0,
     image: "/placeholder.svg",
     stock: 100,
   },
   {
     id: "6",
-    name: "Colour stone 1kg",
+    name: "Đá Màu 1kg",
     price: 80.0,
     image: "/placeholder.svg",
     stock: 100,
@@ -59,7 +59,7 @@ export function FeaturedProducts() {
   return (
     <section className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Sản phẩm </h2>
+        <h2 className="text-2xl font-bold">Sản phẩm nổi bật</h2>
         <div className="flex gap-2">
           <Button variant="outline" size="icon" className="rounded-full">
             <ChevronLeft className="h-4 w-4" />

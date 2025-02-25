@@ -33,8 +33,8 @@ export function CategoryList() {
     try {
       const response = await apiClient.get(API.CATEGORY.GET);
       // Đảm bảo dữ liệu trả về là một mảng
-      if (Array.isArray(response)) {
-        setCategories(response);
+      if (Array.isArray(response.data)) {
+        setCategories(response.data);
       } else {
         throw new Error("Dữ liệu trả về không hợp lệ");
       }

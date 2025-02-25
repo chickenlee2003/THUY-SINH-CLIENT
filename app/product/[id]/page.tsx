@@ -4,15 +4,15 @@ import { ProductImageGallery } from "@/components/product-image-gallery";
 import { ProductDetails } from "@/components/product-details";
 import { ProductReviews } from "@/components/product-reviews";
 
-// This would typically come from an API or database
+// Thông tin này thường đến từ API hoặc cơ sở dữ liệu
 const products = {
   "1": {
     productId: 1,
-    productName: "Gold Fish",
+    productName: "Cá Vàng",
     productPrice: 25.0,
-    productDescription: "Beautiful golden fish, perfect for your aquarium.",
+    productDescription: "Cá vàng đẹp, hoàn hảo cho bể cá của bạn.",
     productQuantity: 100,
-    productStatus: "AVAILABLE",
+    productStatus: "CÓ SẴN",
     categoryId: 2,
     images: [
       {
@@ -39,14 +39,14 @@ export default function ProductPage({ params }: ProductPageProps) {
   const product = products[params.id as keyof typeof products];
 
   if (!product) {
-    return <div>Product not found</div>;
+    return <div>Không tìm thấy sản phẩm</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center gap-2 text-sm">
         <Link href="/" className="hover:text-teal-600">
-          Home
+          Trang chủ
         </Link>
         <ChevronRight className="h-4 w-4" />
         <span>{product.productName}</span>

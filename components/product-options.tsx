@@ -1,33 +1,48 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Star, HelpCircle, Heart, BarChart2, Mail, Twitter, Facebook, Linkedin, PhoneIcon as WhatsApp } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { useState } from "react";
+import {
+  Star,
+  HelpCircle,
+  Heart,
+  BarChart2,
+  Mail,
+  Twitter,
+  Facebook,
+  Linkedin,
+  PhoneIcon as WhatsApp,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductOptionsProps {
-  name: string
-  reviews: number
-  shippingDays: number
-  seller: string
+  name: string;
+  reviews: number;
+  shippingDays: number;
+  seller: string;
   priceRange: {
-    min: number
-    max: number
-  }
-  stock: number
+    min: number;
+    max: number;
+  };
+  stock: number;
 }
 
-export function ProductOptions({ 
-  name, 
-  reviews, 
-  shippingDays, 
-  seller, 
-  priceRange, 
-  stock 
+export function ProductOptions({
+  name,
+  reviews,
+  shippingDays,
+  seller,
+  priceRange,
+  stock,
 }: ProductOptionsProps) {
-  const [size, setSize] = useState('Small')
-  const [quantity, setQuantity] = useState(30)
-  const basePrice = size === 'Small' ? priceRange.min : size === 'Medium' ? (priceRange.min + priceRange.max) / 2 : priceRange.max
-  const totalPrice = basePrice * quantity
+  const [size, setSize] = useState("Nhỏ");
+  const [quantity, setQuantity] = useState(30);
+  const basePrice =
+    size === "Nhỏ"
+      ? priceRange.min
+      : size === "Vừa"
+      ? (priceRange.min + priceRange.max) / 2
+      : priceRange.max;
+  const totalPrice = basePrice * quantity;
 
   return (
     <div className="space-y-6">
@@ -39,49 +54,45 @@ export function ProductOptions({
               <Star key={i} className="h-5 w-5 text-gray-300" />
             ))}
           </div>
-          <span className="text-sm text-gray-500">({reviews} reviews)</span>
+          <span className="text-sm text-gray-500">({reviews} đánh giá)</span>
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Estimate Shipping Time:</span>
-          <span>{shippingDays} Days</span>
+          <span className="text-sm text-gray-500">
+            Thời gian giao hàng khoảng:
+          </span>
+          <span>{shippingDays} Ngày</span>
         </div>
         <div className="flex gap-4">
           <Button variant="outline" className="gap-2">
             <HelpCircle className="h-4 w-4" />
-            Product Inquiry
+            Hỏi đáp sản phẩm
           </Button>
           <Button variant="outline" className="gap-2">
             <Heart className="h-4 w-4" />
-            Add to wishlist
-          </Button>
-          <Button variant="outline" className="gap-2">
-            <BarChart2 className="h-4 w-4" />
-            Add to compare
+            Thêm vào danh sách yêu thích
           </Button>
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Sold by</span>
-          <span>{seller}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Price</span>
-          <span className="text-teal-600">₹{priceRange.min.toFixed(2)} - ₹{priceRange.max.toFixed(2)}/Pc</span>
+          <span className="text-sm text-gray-500">Giá</span>
+          <span className="text-teal-600">
+            {priceRange.min.toFixed(2)} - {priceRange.max.toFixed(2)}vnđ
+          </span>
         </div>
       </div>
 
       <div className="space-y-2">
-        <span className="text-sm text-gray-500">Size</span>
+        <span className="text-sm text-gray-500">Loại</span>
         <div className="flex gap-2">
-          {['Small', 'Medium', 'Large'].map((option) => (
+          {["Nhỏ", "Vừa", "Lớn"].map((option) => (
             <Button
               key={option}
-              variant={size === option ? 'default' : 'outline'}
+              variant={size === option ? "default" : "outline"}
               onClick={() => setSize(option)}
             >
               {option}
@@ -91,7 +102,7 @@ export function ProductOptions({
       </div>
 
       <div className="space-y-2">
-        <span className="text-sm text-gray-500">Quantity</span>
+        <span className="text-sm text-gray-500">Số lượng</span>
         <div className="flex items-center gap-4">
           <div className="flex">
             <Button
@@ -112,23 +123,27 @@ export function ProductOptions({
               +
             </Button>
           </div>
-          <span className="text-sm text-gray-500">({stock} available)</span>
+          <span className="text-sm text-gray-500">({stock} sẵn có)</span>
         </div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500">Total Price</span>
-          <span className="text-xl font-bold text-teal-600">₹{totalPrice.toFixed(2)}</span>
+          <span className="text-sm text-gray-500">Tổng giá</span>
+          <span className="text-xl font-bold text-teal-600">
+            ₹{totalPrice.toFixed(2)}
+          </span>
         </div>
         <div className="flex gap-4">
-          <Button className="flex-1">Add to cart</Button>
-          <Button className="flex-1" variant="secondary">Buy Now</Button>
+          <Button className="flex-1">Thêm vào giỏ hàng</Button>
+          <Button className="flex-1" variant="secondary">
+            Mua ngay
+          </Button>
         </div>
       </div>
 
       <div className="space-y-2">
-        <span className="text-sm text-gray-500">Share</span>
+        <span className="text-sm text-gray-500">Chia sẻ</span>
         <div className="flex gap-2">
           <Button size="icon" variant="outline" className="rounded-full">
             <Mail className="h-4 w-4" />
@@ -148,6 +163,5 @@ export function ProductOptions({
         </div>
       </div>
     </div>
-  )
+  );
 }
-

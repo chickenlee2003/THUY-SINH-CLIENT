@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, HelpCircle, Heart, BarChart2 } from "lucide-react";
+import { Star, HelpCircle, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 // import { ProductImageGallery } from "./product-image-gallery";
@@ -50,14 +50,14 @@ export function ProductDetails({
             ))}
           </div>
           <span className="text-sm text-gray-500">
-            ({reviews.length} reviews)
+            ({reviews.length} đánh giá)
           </span>
         </div>
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Status:</span>
+          <span className="text-sm text-gray-500">Trạng thái:</span>
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-semibold",
@@ -66,34 +66,30 @@ export function ProductDetails({
                 : "bg-red-100 text-red-800"
             )}
           >
-            {productStatus}
+            {productStatus === "AVAILABLE" ? "CÓ SẴN" : "HẾT HÀNG"}
           </span>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="gap-2">
             <HelpCircle className="h-4 w-4" />
-            Product Inquiry
+            Hỏi về sản phẩm
           </Button>
           <Button variant="outline" size="sm" className="gap-2">
             <Heart className="h-4 w-4" />
-            Add to wishlist
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2">
-            <BarChart2 className="h-4 w-4" />
-            Add to compare
+            Thêm vào danh sách yêu thích
           </Button>
         </div>
 
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Price</span>
+            <span className="text-sm text-gray-500">Giá</span>
             <span className="text-teal-600">₹{productPrice}</span>
           </div>
         </div>
 
         <div className="space-y-2">
-          <span className="text-sm text-gray-500">Quantity</span>
+          <span className="text-sm text-gray-500">Số lượng</span>
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <Button
@@ -119,33 +115,33 @@ export function ProductDetails({
               </Button>
             </div>
             <span className="text-sm text-gray-500">
-              ({productQuantity} available)
+              ({productQuantity} có sẵn)
             </span>
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Total Price</span>
+            <span className="text-sm text-gray-500">Tổng giá</span>
             <span className="text-xl font-bold text-teal-600">
               ₹{totalPrice}
             </span>
           </div>
           <div className="mt-4 flex gap-4">
-            <Button className="flex-1">Add to cart</Button>
+            <Button className="flex-1">Thêm vào giỏ hàng</Button>
             <Button variant="secondary" className="flex-1">
-              Buy Now
+              Mua ngay
             </Button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <span className="text-sm text-gray-500">Description</span>
+          <span className="text-sm text-gray-500">Mô tả</span>
           <p className="text-gray-700">{productDescription}</p>
         </div>
 
         <div className="space-y-2">
-          <span className="text-sm text-gray-500">Share</span>
+          <span className="text-sm text-gray-500">Chia sẻ</span>
           <div className="flex gap-2">
             {["email", "twitter", "facebook", "linkedin", "whatsapp"].map(
               (platform) => (
@@ -155,7 +151,7 @@ export function ProductDetails({
                   size="icon"
                   className="rounded-full"
                 >
-                  <span className="sr-only">Share on {platform}</span>
+                  <span className="sr-only">Chia sẻ trên {platform}</span>
                   <i className={`icon-${platform}`} />
                 </Button>
               )
