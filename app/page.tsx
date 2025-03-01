@@ -16,14 +16,14 @@ const featuredCategories = [
     href: "/category/koi-fishes",
   },
   {
-    title: "CÁ RỒNG",
+    title: "CÁ GUPPY",
     image: "/placeholder.svg",
-    href: "/category/arowana",
+    href: "/category/guppy",
   },
   {
-    title: "CÁ SĂN MỒI",
+    title: "CÁ BETTA",
     image: "/placeholder.svg",
-    href: "/category/monster-fishes",
+    href: "/category/betta",
   },
 ];
 

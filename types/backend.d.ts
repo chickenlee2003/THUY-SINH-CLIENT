@@ -4,6 +4,15 @@ export interface ILoginRequest {
   email: string;
   password: string;
 }
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface ILoginResponse {
+  id: number;
+  token: string;
+}
 
 export interface IResponse {
   status: number;

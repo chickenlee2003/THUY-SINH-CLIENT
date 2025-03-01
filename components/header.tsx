@@ -14,22 +14,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { useAuth } from "@/hooks/use-auth";
 // Mock user data
-const mockUser = {
-  name: "Tuấn Kiệt Lê",
-  email: "tuan.kiet@example.com",
-  avatar: "/placeholder.svg", // Replace with actual image URL
-};
+// const mockUser = {
+//   name: "Tuấn Kiệt Lê",
+//   email: "tuan.kiet@example.com",
+//   avatar: "/placeholder.svg", // Replace with actual image URL
+// };
 
 export function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Manage auth state
-  const user = isLoggedIn ? mockUser : null;
-
-  const handleLogout = () => {
-    setIsLoggedIn(false); // Simulate logout
-  };
-
+  const { isAuthenticated, user, logout } = useAuth();
   return (
     <header>
       <div className="container mx-auto px-4 py-4">
@@ -57,7 +51,7 @@ export function Header() {
 
           {/* User, Wishlist, and Cart */}
           <div className="flex items-center gap-4">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 {/* Wishlist Button */}
                 <Link href="/wishlist" className="hover:text-teal-600">
@@ -110,7 +104,7 @@ export function Header() {
                       <div className="border-t my-2" />
                       <button
                         className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 w-full"
-                        onClick={handleLogout}
+                        onClick={logout}
                       >
                         <LogOut className="w-4 h-4" />
                         Đăng xuất

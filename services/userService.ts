@@ -1,10 +1,10 @@
 import apiClient from "./apiClient";
-import { ILoginRequest, IUser } from "../types/backend";
+import { IUser } from "../types/backend";
 
 const userService = {
-  login: async (data: ILoginRequest) => {
-    return await apiClient.post("/auth/login", data);
-  },
+  // login: async (data: ILoginRequest) => {
+  //   return await apiClient.post("/auth/login", data);
+  // },
   updateUser: async (id: number, data: IUser) => {
     return await apiClient.put(`/users/${id}`, data);
   },
@@ -20,6 +20,9 @@ const userService = {
   },
   logout: async () => {
     return await apiClient.post("/auth/logout");
+  },
+  getUser: async (id: number) => {
+    return await apiClient.get(`/users/${id}`);
   },
 };
 

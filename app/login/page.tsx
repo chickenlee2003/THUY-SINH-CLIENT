@@ -7,37 +7,51 @@ import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import userService from "@/services/userService";
+import { authService } from "@/services/auth-service";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setIsLoading(true);
+
+  //   try {
+  //     await authService.login({ email, password });
+  //     router.push("/"); // Redirect to home page after successful login
+  //     router.refresh(); // Refresh the page to update authentication state
+  //   } catch (err: any) {
+  //     setError(err.message || "Invalid email or password");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await userService.login({ email, password });
+    setError("");
+    setIsLoading(true);
 
-      if (response.status === 200) {
-        localStorage.setItem("token", response.data.token); // giả sử token được trả về trong response
-        router.push("/"); // Chuyển hướng đến trang chủ
-      } else {
-        setError("Email hoặc mật khẩu không chính xác. Vui lòng thử lại.");
-      }
-    } catch (err) {
-      console.error("Lỗi đăng nhập", err);
-      setError("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+    try {
+      await authService.login({ email, password });
+      router.push("/"); // Redirect to home page after successful login
+      router.refresh(); // Refresh the page to update authentication state
+    } catch (err: any) {
+      setError(err.message || "Invalid email or password");
+    } finally {
+      setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex">
       {/* Phía trái - Hình ảnh */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img
-          src="/placeholder.svg"
+          src="/reg.jpg"
           alt="Aquarium"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -50,7 +64,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="flex flex-col items-center">
             <img
-              src="/placeholder.svg"
+              src="/logo.jpg"
               alt="Fish Logo"
               className="h-12 w-12 text-teal-600"
             />
