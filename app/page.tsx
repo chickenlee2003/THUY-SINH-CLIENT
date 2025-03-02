@@ -13,7 +13,7 @@ const featuredCategories = [
   {
     title: "CÁ KOI",
     image: "/placeholder.svg",
-    href: "/category/koi-fishes",
+    href: "/category/koi",
   },
   {
     title: "CÁ GUPPY",
@@ -28,6 +28,7 @@ const featuredCategories = [
 ];
 
 export default function Home() {
+  debugger;
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8">

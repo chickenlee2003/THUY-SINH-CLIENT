@@ -4,14 +4,19 @@ import { ILoginRequest, ILoginResponse } from "../types/backend";
 export const authService = {
   async login(credentials: ILoginRequest): Promise<ILoginResponse> {
     const response = await apiClient.post("/auth/login", credentials);
-    const { id, token } = response.data;
+    const { id, token, role } = response.data;
     localStorage.setItem("token", token);
-    return { id, token };
+    localStorage.setItem("id", id);
+    localStorage.setItem("role", role);
+    
+    return response.data;
   },
 
   async logout(): Promise<void> {
-    await apiClient.post("/api/v1/auth/logout");
+    await apiClient.post("/auth/logout");
     localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    localStorage.removeItem("role");
   },
 
   isAuthenticated(): boolean {

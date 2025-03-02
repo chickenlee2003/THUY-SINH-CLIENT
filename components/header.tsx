@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -8,19 +8,21 @@ import {
   Heart,
   Home,
   Clock,
-  Download,
   LifeBuoy,
   LogOut,
+  SquareUserRound
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
+import userService from "@/services/userService";
 // Mock user data
 // const mockUser = {
 //   name: "Tuấn Kiệt Lê",
 //   email: "tuan.kiet@example.com",
 //   avatar: "/placeholder.svg", // Replace with actual image URL
 // };
+const UserProfile = userService.getUser(Number(localStorage.getItem("id")));
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -66,11 +68,11 @@ export function Header() {
                   <div className="flex items-center gap-2 cursor-pointer">
                     <Avatar>
                       <AvatarImage
-                        src={user?.avatar || ""}
-                        alt={user?.name || ""}
+                        src={UserProfile?.avatar || "/avatardf.png"}
+                        alt={UserProfile?.name || ""}
                       />
                       <AvatarFallback>
-                        {user?.name?.charAt(0) || ""}
+                        {UserProfile?.name?.charAt(0) || ""}
                       </AvatarFallback>
                     </Avatar>
                     <div className="hidden md:block">
@@ -79,12 +81,19 @@ export function Header() {
                   </div>
                   <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                     <div className="bg-white rounded-lg shadow-lg border w-56 py-2">
-                      <Link
+                      {/* <Link
                         href="/dashboard"
                         className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         <Home className="w-4 h-4" />
                         Danh mục
+                      </Link> */}
+                        <Link
+                        href="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                      >
+                        <SquareUserRound className="w-4 h-4" />
+                        Thông tin cá nhân
                       </Link>
                       <Link
                         href="/purchase-history"

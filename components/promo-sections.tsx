@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export function PromoSections() {
   return (
     <div className="grid md:grid-cols-2 gap-8">
-      <div className="relative overflow-hidden rounded-lg bg-[url('/placeholder.svg')] bg-cover bg-center">
+      <div className="relative overflow-hidden rounded-lg bg-[url('/dichvubaotrijpg.jpg')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative p-8">
           <h2 className="text-3xl font-bold text-white mb-4">
@@ -19,7 +19,7 @@ export function PromoSections() {
           </Button>
         </div>
       </div>
-      <div className="relative overflow-hidden rounded-lg bg-[url('/placeholder.svg')] bg-cover bg-center">
+      <div className="relative overflow-hidden rounded-lg bg-[url('/beca.jfif')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative p-8">
           <h2 className="text-3xl font-bold text-white mb-4">HỒ CÁ</h2>

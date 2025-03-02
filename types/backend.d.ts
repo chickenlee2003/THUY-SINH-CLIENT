@@ -12,7 +12,10 @@ interface LoginRequest {
 interface ILoginResponse {
   id: number;
   token: string;
+  role: string;
+  
 }
+
 
 export interface IResponse {
   status: number;
@@ -129,3 +132,27 @@ export interface IOrderWithDetails extends IOrder {
 export interface IOrderWithUser extends IOrder {
   user: IUser;
 }
+
+
+export interface OrderCreateRequestDto {
+  orderNote?: string; // Optional note for the order
+  locationId: number; // ID of the location for delivery
+  // Add other fields as necessary
+}
+
+export interface OrderResponseDTO {
+  id: number;
+  userId: number;
+  totalAmount: number;
+  orderStatus: string;
+  orderDetails: OrderDetailDTO[]; // Assuming you have an OrderDetailDTO type
+  // Add other fields as necessary
+}
+
+export interface OrderDetailDTO {
+  productId: number;
+  orderDetailPrice: number;
+  orderDetailQuantity: number;
+  orderDetailAmount: number;
+  // Add other fields as necessary
+} 

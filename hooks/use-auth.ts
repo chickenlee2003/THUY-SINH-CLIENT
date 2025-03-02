@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth-service";
+import { toast } from "react-toastify";
 
 export function useAuth() {
   const router = useRouter();
@@ -13,13 +14,15 @@ export function useAuth() {
     setIsAuthenticated(authService.isAuthenticated());
     setIsLoading(false);
   }, []);
+  
 
   const logout = async () => {
     try {
       await authService.logout();
       setIsAuthenticated(false);
-      router.push("/login");
+      router.push("/");
       router.refresh();
+      toast.success("Đăng xuất thành công");
     } catch (error) {
       console.error("Logout failed:", error);
     }

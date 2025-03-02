@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import cartItemService from "@/services/cartItem.service";
+import { toast } from "react-toastify";
 
 interface AddToCartModalProps {
   isOpen: boolean;
@@ -37,6 +39,24 @@ export function AddToCartModal({
     setTotalPrice(product.productPrice * quantity);
   }, [product.productPrice, quantity]);
 
+  const handleAddToCart = async () => {
+    
+    const userId = Number(localStorage.getItem("id"));
+    if (!userId) {
+      toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    try {
+      await cartItemService.addItemToCart(product.productId, quantity, userId);
+      toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
+      onClose();
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      toast.error("Thêm sản phẩm vào giỏ hàng thất bại.");
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
@@ -49,7 +69,7 @@ export function AddToCartModal({
               className="h-6 w-6 rounded-full"
               onClick={onClose}
             >
-              <X className="h-4 w-4" />
+              {/* <X className="h-4 w-4" /> */}
             </Button>
           </DialogTitle>
         </DialogHeader>
@@ -70,12 +90,14 @@ export function AddToCartModal({
             </div>
             <div className="flex-1 space-y-2">
               <div>
-                <div className="text-sm text-gray-500">Price</div>
-                <div className="text-teal-600">₹{product.productPrice}</div>
+                <div className="text-sm text-gray-500">Giá</div>
+                <div className="text-teal-600">
+                  {new Intl.NumberFormat('vi-VN').format(product.productPrice)} VNĐ
+                </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500">Status</div>
-                <div
+                <div className="text-sm text-gray-500">Trạng thái còn hàng</div>
+                {/* <div
                   className={cn(
                     "text-sm font-medium",
                     product.productStatus === "AVAILABLE"
@@ -84,16 +106,16 @@ export function AddToCartModal({
                   )}
                 >
                   {product.productStatus}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">Quantity</span>
+              <span className="text-sm text-gray-500">Số lượng</span>
               <span className="text-sm text-gray-500">
-                ({product.productQuantity} available)
+                ({product.productQuantity} Có sẵn)
               </span>
             </div>
             <div className="flex items-center">
@@ -123,23 +145,20 @@ export function AddToCartModal({
 
           <div className="space-y-4">
             <div className="flex items-center justify-between border-t pt-4">
-              <span className="text-sm text-gray-500">Total Price</span>
+              <span className="text-sm text-gray-500">Tổng tiền:</span>
               <span className="text-xl font-bold text-teal-600">
-                ₹{totalPrice}
+                {new Intl.NumberFormat('vi-VN').format(totalPrice)} VNĐ
               </span>
             </div>
             <Button
               className="w-full"
               size="lg"
-              onClick={() => {
-                // Add to cart logic here
-                onClose();
-              }}
+              onClick={handleAddToCart}
               disabled={product.productStatus !== "AVAILABLE"}
             >
               {product.productStatus === "AVAILABLE"
-                ? "Add to cart"
-                : "Out of Stock"}
+                ? "Thêm vào giỏ hàng"
+                : "Hết hàng"}
             </Button>
           </div>
         </div>

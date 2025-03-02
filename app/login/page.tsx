@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { authService } from "@/services/auth-service";
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -16,28 +17,15 @@ export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setIsLoading(true);
-
-  //   try {
-  //     await authService.login({ email, password });
-  //     router.push("/"); // Redirect to home page after successful login
-  //     router.refresh(); // Refresh the page to update authentication state
-  //   } catch (err: any) {
-  //     setError(err.message || "Invalid email or password");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
     try {
-      await authService.login({ email, password });
+      const response = await authService.login({ email, password });
+
       router.push("/"); // Redirect to home page after successful login
       router.refresh(); // Refresh the page to update authentication state
     } catch (err: any) {

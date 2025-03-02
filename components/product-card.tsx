@@ -71,9 +71,9 @@ export function ProductCard({
               />
             </div>
             <div className="space-y-1 p-4">
-              <h3 className="text-center font-medium">{productName}</h3>
+              <h3 className="text-center font-extralight">{productName}</h3>
               <p className="text-center font-semibold text-teal-600">
-                {productPrice}vnđ
+                {new Intl.NumberFormat('vi-VN').format(productPrice)} VNĐ
               </p>
             </div>
           </CardContent>

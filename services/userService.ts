@@ -22,6 +22,9 @@ const userService = {
     return await apiClient.post("/auth/logout");
   },
   getUser: async (id: number) => {
+    if(id === 0) {
+      return null;
+    }
     return await apiClient.get(`/users/${id}`);
   },
 };
