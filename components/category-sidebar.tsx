@@ -16,15 +16,15 @@ import {
 import { cn } from "@/lib/utils";
 
 const categories = [
-  { id: "fish-food", icon: Cookie, label: "Thức ăn" },
-  { id: "accessories", icon: Package, label: "Phụ kiện" },
-  { id: "aquarium-tanks", icon: Container, label: "Hồ cá" },
-  { id: "fresh-water-fishes", icon: Droplets, label: "Cá nước ngọt" },
-  { id: "monster-fishes", icon: MonsterFish, label: "Cá săn mồi" },
-  { id: "snails", icon: Shell, label: "Ốc" },
-  { id: "shrimp", icon: ShrimpIcon, label: "Tôm" },
-  { id: "marinefish", icon: Anchor, label: "Cá nước mặn" },
-  { id: "all", icon: Fish, label: "Tất cả sản phẩm" },
+  { id: "category-parent/4", icon: Cookie, label: "Thức ăn" },
+  { id: "/category-parent/2", icon: Package, label: "Phụ kiện" },
+  { id: "/category/4", icon: Container, label: "Hồ cá" },
+  { id: "/category-parent/1", icon: Droplets, label: "Cá nước ngọt" },
+  { id: "/category-parent/5", icon: MonsterFish, label: "Cá săn mồi" },
+  { id: "/category-parent/6", icon: ShrimpIcon, label: "Tép cảnh" },
+  { id: "/category/11", icon: Fish, label: "Một số loại cá khác" },
+  // { id: "marinefish", icon: Anchor, label: "Cá nước mặn" },
+  { id: "/", icon: Fish, label: "Tất cả sản phẩm" },
 ];
 
 interface CategorySidebarProps {
@@ -38,9 +38,11 @@ export function CategorySidebar({
   const searchParams = useSearchParams();
 
   const handleCategoryClick = (categoryId: string) => {
+    debugger;
     const params = new URLSearchParams(searchParams);
     params.set("category", categoryId);
-    router.push(`/products?${params.toString()}`);
+    const categoryUrl = categoryId;
+    router.push(`/products/${categoryUrl}`);
   };
 
   return (

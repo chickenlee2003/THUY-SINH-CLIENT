@@ -9,8 +9,8 @@ export default function ContactPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 text-center">
         <img
-          src="/placeholder.svg"
-          alt="Kolathur Fish Market"
+          src="/logo.jpg"
+          alt="Cửa hàng thuỷ sinh"
           className="mx-auto h-24 mb-6"
         />
       </div>
@@ -50,7 +50,7 @@ export default function ContactPage() {
 
         {/* Contact Form */}
         <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-2xl font-bold mb-6">Contact Us Now</h2>
+          <h2 className="text-2xl font-bold mb-6">Kết nối ngay</h2>
           <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Họ tên:</Label>
@@ -92,7 +92,7 @@ export default function ContactPage() {
               size="lg"
               className="w-full bg-teal-600 hover:bg-teal-700"
             >
-              Send Message on WhatsApp
+              Gửi tin nhắn
             </Button>
           </form>
         </div>

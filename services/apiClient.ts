@@ -43,15 +43,15 @@ apiClient.interceptors.response.use(
     // Xử lý lỗi từ response
     if (error.response) {
       // Lỗi từ phía server (status code 4xx, 5xx)
-      console.error("API Error:", error.response.data);
+      console.log("API Error:", error.response.data);
       return Promise.reject(error.response.data);
     } else if (error.request) {
       // Lỗi không nhận được phản hồi từ server
-      console.error("No response received:", error.request);
+      console.log("No response received:", error.request);
       return Promise.reject({ message: "Không có phản hồi từ server." });
     } else {
       // Lỗi khác
-      console.error("Request setup error:", error.message);
+      console.log("Request setup error:", error.message);
       return Promise.reject({ message: "Lỗi khi thiết lập request." });
     }
   }

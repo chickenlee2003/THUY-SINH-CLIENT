@@ -1,31 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AddToCartModal } from "./add-to-cart-modal";
+import { wishlistService } from "@/services/wishlist.service";
+import { toast } from "react-toastify";
 
 interface ProductCardProps {
   productId: number;
   productName: string;
   productPrice: number;
-  images: Array<{ imageId: number; imageUrl: string }>;
+  productDescription: string;
   productQuantity: number;
-  productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+  productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
+  images: Array<{
+    imageId: number;
+    imageUrl: string;
+  }>;
+  isWishlisted?: boolean;
+  onWishlistChange?: (isWishlisted: boolean) => void;
 }
 
 export function ProductCard({
   productId,
   productName,
   productPrice,
-  images,
+  productDescription,
   productQuantity,
   productStatus,
+  images,
+  isWishlisted: initialIsWishlisted = false,
+  onWishlistChange,
 }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted);
   const [showAddToCart, setShowAddToCart] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleWishlistClick = async () => {
+    try {
+      setIsLoading(true);
+      if (isWishlisted) {
+        // We need to find the wishlist ID first
+        const userId = 1; // TODO: Get from auth
+        const response = await wishlistService.getWishlistByUserId(userId);
+        const wishlistItem = response.data.find(item => item.productId === productId);
+        if (wishlistItem) {
+          await wishlistService.removeFromWishlist(wishlistItem.wishListId);
+          toast.success("Đã xóa khỏi danh sách yêu thích");
+        }
+      } else {
+        await wishlistService.addToWishlist(productId);
+        toast.success("Đã thêm vào danh sách yêu thích");
+      }
+      setIsWishlisted(!isWishlisted);
+      onWishlistChange?.(!isWishlisted);
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -36,7 +74,8 @@ export function ProductCard({
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
-            onClick={() => setIsWishlisted(!isWishlisted)}
+            onClick={handleWishlistClick}
+            disabled={isLoading}
           >
             <Heart
               className={`h-4 w-4 ${
@@ -87,9 +126,9 @@ export function ProductCard({
           productId,
           productName,
           productPrice,
-          images,
           productQuantity,
           productStatus,
+          images,
         }}
       />
     </>

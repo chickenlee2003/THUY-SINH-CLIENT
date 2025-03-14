@@ -7,6 +7,8 @@ export const API = {
     UPDATE: "/category",
     DELETE: "/category",
   },
+  CATEGORYPARENT: {
+    GET: "/category",},
   PRODUCT: {
     GET: "/products",
   },

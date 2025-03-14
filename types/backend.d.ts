@@ -36,7 +36,7 @@ export interface IUser {
   userId?: number;
   email: string;
   fullName: string;
-  password: string;
+  password?: string;
   phoneNumber: string | null;
   avatar?: string | null;
   isActive?: boolean;
@@ -115,6 +115,14 @@ export interface ILocation {
   createdAt?: string;
   updatedAt?: string;
 }
+export interface IAddress {
+  latitude: number;
+  longitude: number;
+  description: string;
+  userId: number; 
+  locationId?: number;
+}
+
 
 export interface ICart {
   productId: number;
@@ -137,16 +145,24 @@ export interface IOrderWithUser extends IOrder {
 export interface OrderCreateRequestDto {
   orderNote?: string; // Optional note for the order
   locationId: number; // ID of the location for delivery
-  // Add other fields as necessary
+  voucherId?: string; // Optional voucher code
+
 }
 
 export interface OrderResponseDTO {
-  id: number;
-  userId: number;
+  orderId: number;
+  orderNote?: string;
   totalAmount: number;
+  totalDiscount?: number;
+  expectedDeliveryTime?: string;
+  shippingFee?: number;
   orderStatus: string;
-  orderDetails: OrderDetailDTO[]; // Assuming you have an OrderDetailDTO type
-  // Add other fields as necessary
+  userId: number;
+  locationId?: number;
+  voucherId?: number;
+  orderDetails?: OrderDetailDTO[];
+  location?: LocationDTO;
+  payment?: PaymentResponseDTO;
 }
 
 export interface OrderDetailDTO {

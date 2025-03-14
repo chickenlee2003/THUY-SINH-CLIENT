@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Star, HelpCircle, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
+import cartItemService from "@/services/cartItem.service";
+
 // import { ProductImageGallery } from "./product-image-gallery";
 
 interface ProductDetailsProps {
@@ -12,7 +15,7 @@ interface ProductDetailsProps {
   productPrice: number;
   productDescription: string;
   productQuantity: number;
-  productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+  productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
   categoryId: number;
   images: Array<{
     imageId: number;
@@ -28,16 +31,63 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({
+  productId,
   productName,
   productPrice,
   productDescription,
   productQuantity,
   productStatus,
   reviews,
+  images,
 }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const totalPrice = productPrice * quantity;
+
+  const handleAddToCart = async () => {
+    const userId = Number(localStorage.getItem("id"));
+    if (!userId) {
+      toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      return;
+    }
+
+    if (productStatus !== "AVAILABLE") {
+      toast.error("Sản phẩm hiện không có sẵn");
+      return;
+    }
+
+    if (productQuantity === 0) {
+      toast.error("Sản phẩm đã hết hàng");
+      return;
+    }
+
+    if (quantity > productQuantity) {
+      toast.error(`Chỉ còn ${productQuantity} sản phẩm có sẵn`);
+      return;
+    }
+
+    if (quantity === 0) {
+      toast.error("Vui lòng chọn số lượng sản phẩm");
+      return;
+    }
+
+    try {
+      setIsAddingToCart(true);
+      await cartItemService.addItemToCart(productId, quantity, userId);
+      toast.success(`Đã thêm ${quantity} ${productName} vào giỏ hàng!`);
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      toast.error("Thêm sản phẩm vào giỏ hàng thất bại.");
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleBuyNow = () => {
+    toast.info("Tính năng đang được phát triển");
+  };
 
   return (
     <div className="space-y-6">
@@ -75,8 +125,13 @@ export function ProductDetails({
             <HelpCircle className="h-4 w-4" />
             Hỏi về sản phẩm
           </Button>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Heart className="h-4 w-4" />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2"
+            onClick={() => setIsWishlisted(!isWishlisted)}
+          >
+            <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
             Thêm vào danh sách yêu thích
           </Button>
         </div>
@@ -84,7 +139,7 @@ export function ProductDetails({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Giá</span>
-            <span className="text-teal-600">₹{productPrice}</span>
+            <span className="text-teal-600">{new Intl.NumberFormat('vi-VN').format(productPrice)} VNĐ</span>
           </div>
         </div>
 
@@ -124,12 +179,34 @@ export function ProductDetails({
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Tổng giá</span>
             <span className="text-xl font-bold text-teal-600">
-              ₹{totalPrice}
+              {new Intl.NumberFormat('vi-VN').format(totalPrice)} VNĐ
             </span>
           </div>
           <div className="mt-4 flex gap-4">
-            <Button className="flex-1">Thêm vào giỏ hàng</Button>
-            <Button variant="secondary" className="flex-1">
+            <Button 
+              className="flex-1" 
+              onClick={handleAddToCart}
+              disabled={
+                isAddingToCart || 
+                productStatus !== "AVAILABLE" || 
+                quantity === 0 || 
+                productQuantity === 0 ||
+                quantity > productQuantity
+              }
+            >
+              {isAddingToCart 
+                ? "Đang thêm..." 
+                : productQuantity === 0 
+                  ? "Hết hàng" 
+                  : "Thêm vào giỏ hàng"
+              }
+            </Button>
+            <Button 
+              variant="secondary" 
+              className="flex-1"
+              onClick={handleBuyNow}
+              disabled={productQuantity === 0}
+            >
               Mua ngay
             </Button>
           </div>

@@ -20,19 +20,18 @@ const orderService = {
     return response.data;
   },
 
-  // Update order status
-  updateOrderStatus: async (orderId: number, status: string): Promise<OrderResponseDTO> => {
-    const response = await apiClient.put(`/orders/status/${orderId}`, { orderStatus: status });
-    return response.data;
+  updateOrderStatus: async (orderId: number, status: string) => {
+    return apiClient.put(`/orders/status/${orderId}`, { orderStatus: status });
   },
 
-  // Update order payment status
-  updateOrderPaymentStatus: async (orderId: number, paymentStatus: string): Promise<OrderResponseDTO> => {
-    const response = await apiClient.put(`/orders/payment-status/${orderId}`, { paymentStatus });
-    return response.data;
+  updatePaymentStatus: async (orderId: number, status: string) => {
+    return apiClient.put(`/orders/payment/${orderId}`, { paymentStatus: status });
   },
 
-
+  // Cancel order
+  cancelOrder: async (orderId: number) => {
+    return apiClient.put(`/orders/status/${orderId}`, { orderStatus: 'CANCELLED' });
+  }
 };
 
 export default orderService;

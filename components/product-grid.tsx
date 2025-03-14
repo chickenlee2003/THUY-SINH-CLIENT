@@ -4,9 +4,13 @@ interface Product {
   productId: number;
   productName: string;
   productPrice: number;
-  images: Array<{ imageId: number; imageUrl: string }>;
+  productDescription: string;
   productQuantity: number;
-  productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+  productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
+  images: Array<{
+    imageId: number;
+    imageUrl: string;
+  }>;
   categoryId: number;
 }
 

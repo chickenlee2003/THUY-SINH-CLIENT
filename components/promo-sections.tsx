@@ -15,7 +15,7 @@ export function PromoSections() {
             variant="outline"
             className="bg-white/10 text-white border-white hover:bg-white/20"
           >
-            <Link href="/services/maintenance">Đặt ngay</Link>
+            {/* <Link href="/services/maintenance">Đặt ngay</Link> */}
           </Button>
         </div>
       </div>
@@ -28,7 +28,7 @@ export function PromoSections() {
             variant="outline"
             className="bg-white/10 text-white border-white hover:bg-white/20"
           >
-            <Link href="/services/aquascaping">Đặt ngay</Link>
+            {/* <Link href="/services/aquascaping">Đặt ngay</Link> */}
           </Button>
         </div>
       </div>

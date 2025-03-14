@@ -14,8 +14,8 @@ export function HeroBanner() {
           size="lg"
           className="bg-white text-teal-600 hover:bg-gray-100"
         >
-          <Link href="/category/aquarium-fishes">Mua Ngay</Link>
-        </Button>
+          <Link href="/products/category-parent/1">Mua Ngay</Link>
+        </Button> 
       </div>
     </div>
   );

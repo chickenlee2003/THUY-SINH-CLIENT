@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+// import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 import cartItemService from "@/services/cartItem.service";
 import { toast } from "react-toastify";
+import { cn } from "@/lib/utils";
 
 interface AddToCartModalProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ interface AddToCartModalProps {
     productPrice: number;
     images: Array<{ imageId: number; imageUrl: string }>;
     productQuantity: number;
-    productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+    productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
   };
 }
 
@@ -40,12 +41,13 @@ export function AddToCartModal({
   }, [product.productPrice, quantity]);
 
   const handleAddToCart = async () => {
-    
+    debugger;
     const userId = Number(localStorage.getItem("id"));
     if (!userId) {
       toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
       return;
     }
+    console.log("product.productStatus", product.productStatus);  
 
     try {
       await cartItemService.addItemToCart(product.productId, quantity, userId);
@@ -96,17 +98,19 @@ export function AddToCartModal({
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500">Trạng thái còn hàng</div>
-                {/* <div
+                <div className="text-sm text-gray-500">Trạng thái</div>
+                <div
                   className={cn(
                     "text-sm font-medium",
                     product.productStatus === "AVAILABLE"
                       ? "text-green-600"
-                      : "text-red-600"
+                      : product.productStatus === "UNAVAILABLE"
+                        ? "text-red-600"
+                        : "text-gray-500"
                   )}
                 >
-                  {product.productStatus}
-                </div> */}
+                  {product.productStatus === "AVAILABLE" ? "Còn hàng" : product.productStatus === "UNAVAILABLE" ? "Hết hàng" : "Ngừng bán"}
+                </div>
               </div>
             </div>
           </div>
@@ -154,11 +158,15 @@ export function AddToCartModal({
               className="w-full"
               size="lg"
               onClick={handleAddToCart}
-              disabled={product.productStatus !== "AVAILABLE"}
+              disabled={product.productStatus === "UNAVAILABLE" || product.productQuantity === 0}
             >
-              {product.productStatus === "AVAILABLE"
-                ? "Thêm vào giỏ hàng"
-                : "Hết hàng"}
+              {product.productStatus === "AVAILABLE" 
+                ? product.productQuantity === 0 
+                  ? "Hết hàng" 
+                  : "Thêm vào giỏ hàng"
+                : product.productStatus === "UNAVAILABLE"
+                  ? "Hết hàng"
+                  : "Ngừng bán"}
             </Button>
           </div>
         </div>

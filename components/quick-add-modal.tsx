@@ -62,7 +62,7 @@ export function QuickAddModal({
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">Price</span>
                 <span className="text-teal-600">
-                  ₹{product.price.toFixed(2)} /Pc
+                  {product.price.toFixed(2)} /Pc
                 </span>
               </div>
               <div className="mt-4">

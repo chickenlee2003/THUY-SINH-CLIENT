@@ -27,6 +27,7 @@ const userService = {
     }
     return await apiClient.get(`/users/${id}`);
   },
+  
 };
 
 export default userService;

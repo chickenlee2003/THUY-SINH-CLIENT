@@ -1,0 +1,214 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Danh Sách Tài Khoản</title>
+
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:replace="common/header :: header"></div>
+	<div class="container mt-5">
+		<!-- <div th:if="${message}" id="message"
+			class="alert alert-success text-center mt-3" role="alert">
+			<p th:text="${message}"></p>
+		</div>  -->
+		<div th:if="${errorMessage}" id="message" class="alert alert-danger text-center mt-3" role="alert">
+			<p th:text="${errorMessage}"></p>
+		</div>
+		<div id="messageDelete"></div>
+		<h1 class="text-center mb-4" th:text="#{app.title}">Danh Sách lấy
+			từ th:text="#{app.title}"</h1>
+		<div class="d-flex justify-content-end mb-3">
+			<a id="btn-export-excel" class="btn btn-success" th:text="#{app.exportExcel}">
+				<i class="fas fa-file-excel"></i> Export Excel
+			</a>
+		</div>
+		<form th:action="@{/accounts}" th:object="${searchTerm}" method="get" class="mb-4">
+			<!-- Row 1: Search Fields -->
+			<div class="row mb-3">
+				<div class="col-md-3">
+					<label for="username" class="form-label" th:text="#{app.username}">Tên đăng nhập</label>
+					<input type="text" th:field="*{username}" id="username" placeholder="" name="username" class="form-control" maxlength="255">
+				</div>
+				<div class="col-md-3">
+					<label for="fullname" class="form-label" th:text="#{app.fullname}">Họ tên</label>
+					<input type="text" th:field="*{fullname}" id="fullname" placeholder="" name="fullname" class="form-control" maxlength="255">
+				</div>
+				<div class="col-md-3">
+					<label for="startDate" class="form-label" th:text="#{app.startDate}">Từ ngày</label>
+					<input type="date" th:field="*{startDate}" id="startDate" name="startDate" class="form-control" placeholder="Từ ngày">
+				</div>
+				<div class="col-md-3">
+					<label for="endDate" class="form-label" th:text="#{app.endDate}">Đến ngày</label>
+					<input type="date" th:field="*{endDate}" id="endDate" name="endDate" class="form-control" placeholder="Đến ngày">
+				</div>
+			</div>
+			
+			<!-- Row 2: Additional Fields and Buttons -->
+			<div class="row align-items-end">
+				<div class="col-md-3">
+					<label for="accountType" class="form-label" th:text="#{app.accountType}">Loại tài khoản</label>
+					<select th:field="*{accountType}" id="accountType" name="accountType" class="form-control">
+						<option th:text="#{app.accountType.user}" value="USER">Người dùng</option>
+						<option th:text="#{app.accountType.admin}" value="ADMIN">Quản trị viên</option>
+					</select>
+				</div>
+				<div class="col-md-3">
+					<label for="isDeleted" class="form-label" th:text="#{app.isDeleted}">Đã xóa</label>
+					<select th:field="*{isDeleted}" id="isDeleted" name="isDeleted" class="form-control">
+						<option th:text="#{app.isDeleted.no}" value="0">Chưa xóa</option>
+						<option th:text="#{app.isDeleted.yes}" value="1">Đã xóa</option>
+					</select>
+				</div>
+				<div class="col-md-6">
+					<div class="d-flex gap-2">
+						<button id="toggleSortOrder" class="btn btn-secondary">
+							<i id="sortOrderIcon" class="fas fa-arrow-down"></i>
+						</button>
+						<button type="submit" class="btn btn-primary" th:text="#{app.search}">Tìm</button>
+						<button type="button" class="btn btn-secondary" id="clearFilters" th:text="#{app.clearFilters}">Xóa bộ lọc</button>
+						<button type="button" class="btn btn-secondary" id="reload" th:text="#{app.reload}">Reload</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Hidden Fields -->
+			<input type="hidden" id="sortColumn" name="sortColumn" th:value="${searchTerm.sortColumn}" />
+			<input type="hidden" id="sortOrder" name="sortOrder" th:value="${searchTerm.sortOrder}" />
+		</form>
+
+		<div class="d-flex justify-content-end mb-3">
+			<a href="/accounts/add" class="btn btn-success" th:text="#{app.addAccount}">Thêm Mới Tài Khoản</a>
+		</div>
+		<!--  Table được cập nhật bằng AJAX -->
+		<div id="table-container" th:replace="account/fragments/accountTable :: table-fragment"></div>
+
+		<!-- Modal Xác Nhận Xóa -->
+		<div class="modal" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="confirmDeleteLabel">Xác nhận xóa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<p>Bạn có chắc chắn muốn xóa tài khoản này không?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Huỷ</button>
+						<button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xoá</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+	<script th:src="@{/js/account-list.js}"></script>
+</body>
+
+<style>
+	#username {
+		text-decoration: none;
+		color: black;
+	}
+
+	.form-control {
+		width: 100%;
+	}
+
+	/* Adding a hover effect */
+	.table-hover tbody tr:hover {
+		background-color: #f5f5f5;
+	}
+
+	.action {
+		width: 110px;
+	}
+
+	/* Style for the action buttons */
+	.table td .btn {
+		padding: 10px 12px;
+		border-radius: 5px;
+		font-size: 8px;
+	}
+
+	/* Adjust color for delete, edit, and detail buttons */
+	.table td .btn-danger {
+		background-color: #dc3545;
+	}
+
+	.table td .btn-warning {
+		background-color: #ffc107;
+	}
+
+	.table td .btn-info {
+		background-color: #17a2b8;
+	}
+
+	/* Button hover effect */
+	.table td .btn:hover {
+		opacity: 0.8;
+	}
+
+	@media (max-width : 768px) {
+		.table td .btn-group {
+			display: block;
+		}
+
+		.table td .btn-group .btn {
+			width: 100%;
+			margin-bottom: 5px;
+		}
+	}
+
+	#head {
+		padding: 10px 20px;
+		background-color: #3498db;
+		color: #fff;
+		text-decoration: none;
+		border-radius: 5px;
+		transition: background-color 0.3s;
+		margin: 5px;
+	}
+
+	#head:hover {
+		background-color: #2980b9;
+	}
+
+	.sortable-header {
+		cursor: pointer;
+	}
+
+	.sortable-header.sorted-column {
+		background-color: #e0f7fa;
+		/* Màu xanh nhạt */
+	}
+
+	.sortable-header i {
+		margin-left: 5px;
+	}
+
+	.sortable-header.sorted-column {
+		background-color: #e0f7fa;
+	}
+
+	#toggleSortOrder {
+		margin-right: 10px;
+		height: 40px;
+		width: 40px;
+		margin-top: 30px;
+
+
+	}
+</style>
+
+</html>

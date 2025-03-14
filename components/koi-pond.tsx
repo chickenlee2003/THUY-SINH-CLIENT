@@ -7,15 +7,15 @@ import { Button } from '@/components/ui/button'
 
 const images = [
   {
-    src: '/placeholder.svg',
+    src: '/koipool1.jpg',
     alt: 'Koi Pond Design 1'
   },
   {
-    src: '/placeholder.svg',
+    src: '/koipool2.jpg',
     alt: 'Koi Pond Design 2'
   },
   {
-    src: '/placeholder.svg',
+    src: '/koipool3.webp',
     alt: 'Koi Pond Design 3'
   }
 ]

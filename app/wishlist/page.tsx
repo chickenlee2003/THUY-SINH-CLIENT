@@ -1,42 +1,75 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { wishlistService } from "@/services/wishlist.service";
+
 interface WishlistItem {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
+  wishListId: number;
+  userId: number;
+  productId: number;
+  productName: string;
 }
 
-const mockWishlist: WishlistItem[] = [
-  {
-    id: "1",
-    name: "Betta Fish Female",
-    price: 500.0,
-    image: "/placeholder.svg",
-  },
-  {
-    id: "2",
-    name: "Crown Tail Betta",
-    price: 800.0,
-    image: "/placeholder.svg",
-  },
-  {
-    id: "3",
-    name: "Full Moon Betta Fish",
-    price: 600.0,
-    image: "/placeholder.svg",
-  },
-];
-
 export default function WishListPage() {
-  const [wishlist, setWishlist] = useState<WishlistItem[]>(mockWishlist);
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const removeFromWishlist = (id: string) => {
-    setWishlist(wishlist.filter((item) => item.id !== id));
+  useEffect(() => {
+    async function fetchWishlist() {
+      try {
+        // TODO: Replace with actual user ID from authentication
+        const userId = 1; // Temporary user ID
+        const response = await wishlistService.getWishlistByUserId(userId);
+        setWishlist(response.data);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
+        setError("Không thể tải danh sách yêu thích. Vui lòng thử lại sau.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchWishlist();
+  }, []);
+
+  const removeFromWishlist = async (wishlistId: number) => {
+    try {
+      await wishlistService.removeFromWishlist(wishlistId);
+      setWishlist(wishlist.filter((item) => item.wishListId !== wishlistId));
+    } catch (err) {
+      console.error("Error removing from wishlist:", err);
+      // You might want to show an error toast here
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Danh sách yêu thích của bạn</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="border rounded-lg shadow-sm p-4 space-y-4">
+              <div className="aspect-square w-full bg-gray-200 animate-pulse rounded-lg" />
+              <div className="h-4 bg-gray-200 animate-pulse rounded w-2/3 mx-auto" />
+              <div className="h-4 bg-gray-200 animate-pulse rounded w-1/3 mx-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Danh sách yêu thích của bạn</h1>
+        <div className="text-red-500 text-center">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,26 +78,23 @@ export default function WishListPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {wishlist.map((item) => (
             <div
-              key={item.id}
+              key={item.wishListId}
               className="border rounded-lg shadow-sm p-4 space-y-4 flex flex-col items-center"
             >
               <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
                 <Image
-                  src={item.image}
-                  alt={item.name}
+                  src="/placeholder.svg"
+                  alt={item.productName}
                   width={150}
                   height={150}
                   className="object-cover w-full h-full"
                 />
               </div>
-              <h2 className="text-lg font-medium text-center">{item.name}</h2>
-              <p className="text-teal-600 font-semibold text-center">
-                {item.price.toFixed(2)}vnđ
-              </p>
+              <h2 className="text-lg font-medium text-center">{item.productName}</h2>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => removeFromWishlist(item.id)}
+                  onClick={() => removeFromWishlist(item.wishListId)}
                 >
                   Xóa
                 </Button>

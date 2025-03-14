@@ -30,12 +30,12 @@ export default function CartPage() {
   useEffect(() => {
     const fetchCartItems = async () => {
       if (userId) {
-        try {
+        try { 
           const response = await cartItemService.getCartByUserId(userId);
           setCartItems(response.data.cartItems); // Assuming the response structure
           setTotalAmount(response.data.totalAmount); // Use total amount from API response
         } catch (error) {
-          console.error("Failed to fetch cart items:", error);
+          console.log("Failed to fetch cart items:", error);
         }
       }
     };
@@ -59,10 +59,10 @@ export default function CartPage() {
         setCartItems(updatedCartItems);
         setTotalAmount(calculateTotalAmount(updatedCartItems)); // Recalculate total amount
       } else {
-        console.error("Product ID is undefined, cannot remove item from cart.");
+        console.log("Product ID is undefined, cannot remove item from cart.");
       }
     } catch (error) {
-      console.error("Failed to remove item from cart:", error);
+      console.log("Failed to remove item from cart:", error);
     }
   };
 
@@ -89,7 +89,7 @@ export default function CartPage() {
         setCartItems(updatedCartItems);
         setTotalAmount(calculateTotalAmount(updatedCartItems)); // Recalculate total amount
       } catch (error) {
-        console.error("Failed to update item quantity:", error);
+        console.log("Failed to update item quantity:", error);
       }
     }
   };
@@ -101,7 +101,7 @@ export default function CartPage() {
       // Chuyển hướng đến trang checkout
       window.location.href = "/checkout"; // Đường dẫn đến trang checkout
     } catch (err) {
-      console.error("Error during payment", err);
+      console.log("Error during payment", err);
     } finally {
       setIsLoading(false);
     }

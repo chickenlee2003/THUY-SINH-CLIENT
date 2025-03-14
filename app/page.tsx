@@ -8,22 +8,24 @@ import { KoiPond } from "@/components/koi-pond";
 import { NewProducts } from "@/components/new-products";
 import { FooterLinks } from "@/components/footer-links";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const featuredCategories = [
   {
     title: "CÁ KOI",
-    image: "/placeholder.svg",
-    href: "/category/koi",
+    image: "/tancho.jfif",
+    href: "/products/category/3",
   },
   {
     title: "CÁ GUPPY",
-    image: "/placeholder.svg",
-    href: "/category/guppy",
+    image: "/Guppyfish_85.jpg",
+    href: "/products/category/1",
   },
   {
     title: "CÁ BETTA",
-    image: "/placeholder.svg",
-    href: "/category/betta",
+    image: "/Bettafish_21.jpg",
+    href: "/products/category/2",
   },
 ];
 

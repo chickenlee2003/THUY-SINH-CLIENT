@@ -1,10 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { ProductGrid } from "@/components/product-grid";
-import { CategorySidebar } from "@/components/category-sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import productService from "@/services/product.service";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CategorySidebar } from "@/components/category-sidebar";
 
 interface Product {
   productId: number;
@@ -12,44 +19,28 @@ interface Product {
   productPrice: number;
   productDescription: string;
   productQuantity: number;
-  productStatus: "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED";
+  productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
   categoryId: number;
   images: Array<{
     imageId: number;
     imageUrl: string;
   }>;
-  createdAt: string;
 }
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const category = searchParams.get("category") || "all";
+  const [sort, setSort] = useState<string>("default");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchProducts() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/products?category=${category}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
-        const formattedProducts = data.map((product: Product) => ({
-          productId: product.productId,
-          productName: product.productName,
-          productPrice: product.productPrice,
-          productDescription: product.productDescription,
-          productQuantity: product.productQuantity,
-          productStatus: product.productStatus as "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED",
-          categoryId: product.categoryId,
-          images: product.images,
-          createdAt: product.createdAt,
-        }));
-        setProducts(formattedProducts);
+        const response = await productService.getAllProducts();
+        setProducts(response.data);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load products. Please try again later.");
@@ -59,23 +50,64 @@ export default function ProductsPage() {
     }
 
     fetchProducts();
-  }, [category]);
+  }, []);
+
+  useEffect(() => {
+    const sortedProducts = [...products];
+    switch (sort) {
+      case "price-low":
+        sortedProducts.sort((a, b) => a.productPrice - b.productPrice);
+        break;
+      case "price-high":
+        sortedProducts.sort((a, b) => b.productPrice - a.productPrice);
+        break;
+      case "name-asc":
+        sortedProducts.sort((a, b) => a.productName.localeCompare(b.productName));
+        break;
+      case "name-desc":
+        sortedProducts.sort((a, b) => b.productName.localeCompare(a.productName));
+        break;
+      default:
+        break;
+    }
+    setProducts(sortedProducts);
+  }, [sort]);
+
+  const filteredProducts = selectedCategory
+    ? products.filter(product => product.categoryId === selectedCategory)
+    : products;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr]">
-        <CategorySidebar activeCategory={category} />
-        <div className="space-y-8">
-          <h1 className="text-2xl font-bold">
-            {category === "all" ? "All Products" : `Category: ${category}`}
-          </h1>
+      <div className="flex gap-8">
+        <CategorySidebar onSelectCategory={setSelectedCategory} selectedCategory={selectedCategory} />
+        <div className="flex-1">
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Tất cả sản phẩm</h1>
+            <Select defaultValue="default" onValueChange={setSort}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sắp xếp theo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Mặc định</SelectItem>
+                <SelectItem value="price-low">Giá: Thấp đến cao</SelectItem>
+                <SelectItem value="price-high">Giá: Cao đến thấp</SelectItem>
+                <SelectItem value="name-asc">Tên: A đến Z</SelectItem>
+                <SelectItem value="name-desc">Tên: Z đến A</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {isLoading ? (
             <SkeletonLoader />
           ) : error ? (
             <div className="text-red-500 text-center">{error}</div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Không có sản phẩm nào.</p>
+            </div>
           ) : (
-            <ProductGrid products={products} />
+            <ProductGrid products={filteredProducts} />
           )}
         </div>
       </div>
