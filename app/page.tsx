@@ -44,10 +44,10 @@ export default function Home() {
               <CategoryBanner key={category.title} {...category} />
             ))}
           </div>
-          <BestSelling />
-          {/* <NewProducts /> */}
           <KoiPond />
-          <FooterLinks />
+          <BestSelling />
+          {/* <NewProducts /> */} 
+          {/* <FooterLinks /> */}
           <ToastContainer />
         </div>
       </div>

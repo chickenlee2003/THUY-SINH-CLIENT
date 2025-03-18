@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CategorySidebar } from "@/components/category-sidebar";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Product {
   productId: number;
@@ -33,6 +35,10 @@ export default function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<string>("default");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -44,7 +50,7 @@ export default function ProductsPage() {
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load products. Please try again later.");
-      } finally {
+      } finally { 
         setIsLoading(false);
       }
     }
@@ -73,14 +79,30 @@ export default function ProductsPage() {
     setProducts(sortedProducts);
   }, [sort]);
 
+  // Reset to first page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
   const filteredProducts = selectedCategory
     ? products.filter(product => product.categoryId === selectedCategory)
     : products;
 
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex gap-8">
-        <CategorySidebar onSelectCategory={setSelectedCategory} selectedCategory={selectedCategory} />
+        <CategorySidebar activeCategory="/" />
         <div className="flex-1">
           <div className="mb-8 flex items-center justify-between">
             <h1 className="text-2xl font-bold">Tất cả sản phẩm</h1>
@@ -107,7 +129,47 @@ export default function ProductsPage() {
               <p className="text-gray-500">Không có sản phẩm nào.</p>
             </div>
           ) : (
-            <ProductGrid products={filteredProducts} />
+            <>
+              <ProductGrid products={currentItems} />
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center mt-8 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={prevPage} 
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={currentPage === i + 1 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => paginate(i + 1)}
+                      className="min-w-[40px]"
+                    >
+                      {i + 1}
+                    </Button>
+                  )).slice(
+                    Math.max(0, currentPage - 3),
+                    Math.min(totalPages, currentPage + 2)
+                  )}
+                  
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={nextPage} 
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -95,7 +95,7 @@ export function Footer() {
       </div>
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-4">
-          <p className="text-sm text-center">© 2025 FishShop</p>
+          <p className="text-sm text-center">© 2025 Cửa hàng thuỷ sinh</p>
         </div>
       </div>
     </footer>

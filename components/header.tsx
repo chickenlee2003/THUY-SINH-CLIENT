@@ -1,87 +1,138 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
   ShoppingCart,
   Heart,
-  Home,
   Clock,
   LifeBuoy,
   LogOut,
   SquareUserRound,
-  Camera
+  Camera,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
-import userService from "@/services/userService";
 import { CameraInterface } from "@/components/camera-interface";
-import { useToast } from "@/components/ui/use-toast";
+import { FishRecognitionModal } from "@/components/fish-recognition-modal";
+import productService from "@/services/product.service";
 
-// Mock user data
-// const mockUser = {
-//   name: "Tuấn Kiệt Lê",
-//   email: "tuan.kiet@example.com",
-//   avatar: "/placeholder.svg", // Replace with actual image URL
-// };
-// const UserProfile = userService.getUser(Number(localStorage.getItem("id")));
-const UserProfile = typeof window !== 'undefined' 
-  ? userService.getUser(Number(localStorage.getItem("id")))
-  : null;
+// Define the product interface
+interface Product {
+  productId: number;
+  productName: string;
+  productPrice: number;
+  productDescription: string;
+  productQuantity: number;
+  productStatus: string;
+  images: Array<{
+    imageId: number;
+    imageUrl: string;
+  }>;
+}
 
 export function Header() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const router = useRouter();
+  const { isAuthenticated, logout } = useAuth();
   const [showCamera, setShowCamera] = useState(false);
-  const { toast } = useToast();
+  const [showRecognitionModal, setShowRecognitionModal] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (query.trim().length === 0) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+  };
+
+  // Debounce search to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.trim().length > 1) {
+        searchProducts(searchQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Handle click outside search results to close them
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Search products using the API
+  const searchProducts = async (query: string) => {
+    if (!query.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await productService.searchProducts(query);
+      if (response.data) {
+        setSearchResults(response.data);
+        setShowResults(true);
+      }
+    } catch (error) {
+      console.error("Error searching products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle search submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?keyword=${encodeURIComponent(searchQuery)}`);
+      setShowResults(false);
+    }
+  };
+
+  // Handle navigation to product detail
+  const handleProductClick = (productId: number) => {
+    router.push(`/product/${productId}`);
+    setShowResults(false);
+    setSearchQuery("");
+  };
 
   const handleImageCapture = async (imageData: string) => {
     setShowCamera(false);
+    setCapturedImage(imageData);
+    setShowRecognitionModal(true);
+  };
 
-    toast({
-      title: "Processing image...",
-      description: "Please wait a moment.",
-    });
+  const handleCloseRecognitionModal = () => {
+    setShowRecognitionModal(false);
+    setCapturedImage(null);
+  };
 
-    try {
-      // Convert base64 to blob
-      const base64Response = await fetch(imageData);
-      const blob = await base64Response.blob();
-
-      // Create form data
-      const formData = new FormData();
-      formData.append("file", blob, "image.jpg");
-
-      // Send to prediction API
-      const response = await fetch("http://localhost:8000/predict", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (result.prediction) {
-        toast({
-          title: "Prediction Result",
-          description: `This could be: ${result.prediction}`,
-          duration: 5000,
-        });
-      } else {
-        toast({
-          title: "Unable to Identify",
-          description: "Sorry, we couldn't identify the fish in the image.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error predicting image:", error);
-      toast({
-        title: "Error",
-        description: "An error occurred while processing the image.",
-        variant: "destructive",
-      });
-    }
+  const clearSearch = () => {
+    setSearchQuery("");
+    setSearchResults([]);
+    setShowResults(false);
   };
 
   return (
@@ -99,21 +150,95 @@ export function Header() {
             </Link>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-2xl flex items-center gap-2">
+            <div className="flex-1 max-w-2xl flex items-center gap-2" ref={searchRef}>
               <div className="relative flex-1">
-                <input
-                  type="search"
-                  placeholder="TÌm kiếm ..."
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
-                />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <form onSubmit={handleSearchSubmit}>
+                  <div className="relative">
+                    <input
+                      type="search"
+                      placeholder="Tìm kiếm ..."
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      onFocus={() => searchQuery.trim() && searchResults.length > 0 && setShowResults(true)}
+                    />
+                    {/* {searchQuery && (
+                      <button 
+                        type="button" 
+                        className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        onClick={clearSearch}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )} */}
+                    <button type="submit" className="mr-7  absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <Search className="h-5 w-5" />
+                    </button>
+                  </div>
+                </form>
+
+                {/* Search Results Dropdown */}
+                {showResults && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 max-h-80 overflow-y-auto">
+                    <div className="p-3 border-b">
+                      <span className="text-sm text-gray-500">Kết quả tìm kiếm cho &quot;{searchQuery}&quot;</span>
+                    </div>
+                    <ul>
+                      {searchResults.map((product) => (
+                        <li key={product.productId} className="border-b last:border-0">
+                          <button 
+                            className="flex items-center gap-3 p-3 w-full text-left hover:bg-gray-50 transition-colors"
+                            onClick={() => handleProductClick(product.productId)}
+                          >
+                            <div className="w-12 h-12 rounded bg-gray-200 overflow-hidden flex-shrink-0">
+                              {product.images && product.images.length > 0 && (
+                                <img 
+                                  src={product.images[0].imageUrl} 
+                                  alt={product.productName} 
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium line-clamp-1">{product.productName}</h4>
+                              <p className="text-sm text-teal-600">{product.productPrice.toLocaleString('vi-VN')} VNĐ</p>
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="p-3 border-t bg-gray-50">
+                      <Link 
+                        href={`/search?keyword=${encodeURIComponent(searchQuery)}`}
+                        className="text-sm text-teal-600 hover:text-teal-700 block text-center"
+                        onClick={() => setShowResults(false)}
+                      >
+                        Xem tất cả kết quả
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                {/* No Results Message */}
+                {showResults && searchQuery.trim() && searchResults.length === 0 && !isLoading && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 p-4 text-center">
+                    <p className="text-gray-500">Không tìm thấy sản phẩm nào phù hợp</p>
+                  </div>
+                )}
+
+                {/* Loading State */}
+                {isLoading && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 p-4 text-center">
+                    <p className="text-gray-500">Đang tìm kiếm...</p>
+                  </div>
+                )}
               </div>
               <Button
                 variant="outline"
                 size="icon"
                 className="h-10 w-10 rounded-full flex-shrink-0 border-teal-600 text-teal-600 hover:bg-teal-50"
                 onClick={() => setShowCamera(true)}
-                title="Identify fish by image"
+                title="Nhận diện cá bằng hình ảnh"
               >
                 <Camera className="h-5 w-5" />
               </Button>
@@ -136,26 +261,19 @@ export function Header() {
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Avatar>
                         <AvatarImage
-                          src={UserProfile?.avatar || "/avatardf.png"}
-                          alt={UserProfile?.name || ""}
+                          src="/avatardf.png"
+                          alt="User Avatar"
                         />
                         <AvatarFallback>
-                          {UserProfile?.name?.charAt(0) || ""}
+                          U
                         </AvatarFallback>
                       </Avatar>
                       <div className="hidden md:block">
-                        <p className="text-sm font-medium">{user?.name}</p>
+                        <p className="text-sm font-medium">Người dùng</p>
                       </div>
                     </div>
                     <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                       <div className="bg-white rounded-lg shadow-lg border w-56 py-2">
-                        {/* <Link
-                          href="/dashboard"
-                          className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
-                        >
-                          <Home className="w-4 h-4" />
-                          Danh mục
-                        </Link> */}
                           <Link
                           href="/profile"
                           className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
@@ -207,8 +325,6 @@ export function Header() {
                 <Button variant="outline" className="flex items-center gap-2">
                   <ShoppingCart className="h-5 w-5" />
                   <span>Giỏ hàng</span>
-                  {/* <span>0vnđ</span>
-                  <span className="text-xs">(0 sản phẩm)</span> */}
                 </Button>
               </Link>
             </div>
@@ -219,11 +335,6 @@ export function Header() {
         <nav className="bg-teal-600 text-white">
           <div className="container mx-auto px-4">
             <ul className="flex items-center">
-              {/* <li>
-                <Button variant="ghost" className="text-white hover:text-white hover:bg-teal-700">
-                  Categories
-                </Button>
-              </li> */}
               <li>
                 <Link href="/">
                   <Button
@@ -269,9 +380,20 @@ export function Header() {
         </nav>
       </header>
 
+      {/* Camera Interface */}
       {showCamera && (
-        <CameraInterface onCapture={handleImageCapture} onClose={() => setShowCamera(false)} />
+        <CameraInterface
+          onCapture={handleImageCapture}
+          onClose={() => setShowCamera(false)}
+        />
       )}
+
+      {/* Fish Recognition Modal */}
+      <FishRecognitionModal
+        isOpen={showRecognitionModal}
+        onClose={handleCloseRecognitionModal}
+        imageData={capturedImage}
+      />
     </>
   );
 }

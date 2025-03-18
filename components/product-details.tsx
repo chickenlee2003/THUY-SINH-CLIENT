@@ -17,6 +17,7 @@ interface ProductDetailsProps {
   productQuantity: number;
   productStatus: "AVAILABLE" | "UNAVAILABLE" | "DISCONTINUED";
   categoryId: number;
+  productSold: number;
   images: Array<{
     imageId: number;
     imageUrl: string;
@@ -38,6 +39,7 @@ export function ProductDetails({
   productQuantity,
   productStatus,
   reviews,
+  productSold,
   images,
 }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(1);
@@ -47,33 +49,33 @@ export function ProductDetails({
   const totalPrice = productPrice * quantity;
 
   const handleAddToCart = async () => {
-    const userId = Number(localStorage.getItem("id"));
-    if (!userId) {
-      toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
-      return;
-    }
-
-    if (productStatus !== "AVAILABLE") {
-      toast.error("Sản phẩm hiện không có sẵn");
-      return;
-    }
-
-    if (productQuantity === 0) {
-      toast.error("Sản phẩm đã hết hàng");
-      return;
-    }
-
-    if (quantity > productQuantity) {
-      toast.error(`Chỉ còn ${productQuantity} sản phẩm có sẵn`);
-      return;
-    }
-
-    if (quantity === 0) {
-      toast.error("Vui lòng chọn số lượng sản phẩm");
-      return;
-    }
-
     try {
+      const userId = Number(localStorage.getItem("id"));
+      if (!userId) {
+        toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+        return;
+      }
+
+      if (productStatus !== "AVAILABLE") {
+        toast.error("Sản phẩm hiện không có sẵn");
+        return;
+      }
+
+      if (productQuantity === 0) {
+        toast.error("Sản phẩm đã hết hàng");
+        return;
+      }
+
+      if (quantity > productQuantity) {
+        toast.error(`Chỉ còn ${productQuantity} sản phẩm có sẵn`);
+        return;
+      }
+
+      if (quantity === 0) {
+        toast.error("Vui lòng chọn số lượng sản phẩm");
+        return;
+      }
+
       setIsAddingToCart(true);
       await cartItemService.addItemToCart(productId, quantity, userId);
       toast.success(`Đã thêm ${quantity} ${productName} vào giỏ hàng!`);
@@ -86,7 +88,16 @@ export function ProductDetails({
   };
 
   const handleBuyNow = () => {
-    toast.info("Tính năng đang được phát triển");
+    try {
+      toast.info("Tính năng đang được phát triển");
+    } catch (error) {
+      console.error("Toast error:", error);
+    }
+  };
+
+  // Test toast function to verify toast is working
+  const testToast = () => {
+    toast.success("Test toast notification");
   };
 
   return (
@@ -121,10 +132,10 @@ export function ProductDetails({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
+          {/* <Button variant="outline" size="sm" className="gap-2">
             <HelpCircle className="h-4 w-4" />
             Hỏi về sản phẩm
-          </Button>
+          </Button> */}
           <Button 
             variant="outline" 
             size="sm" 
@@ -134,6 +145,7 @@ export function ProductDetails({
             <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
             Thêm vào danh sách yêu thích
           </Button>
+      
         </div>
 
         <div>
@@ -171,6 +183,9 @@ export function ProductDetails({
             </div>
             <span className="text-sm text-gray-500">
               ({productQuantity} có sẵn)
+            </span>
+            <span className="text-sm text-gray-500">
+              (Đã bán: {productSold})
             </span>
           </div>
         </div>
@@ -217,7 +232,7 @@ export function ProductDetails({
           <p className="text-gray-700">{productDescription}</p>
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <span className="text-sm text-gray-500">Chia sẻ</span>
           <div className="flex gap-2">
             {["email", "twitter", "facebook", "linkedin", "whatsapp"].map(
@@ -234,7 +249,7 @@ export function ProductDetails({
               )
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Camera, CameraIcon as FlipCamera, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -16,21 +16,27 @@ export function CameraInterface({ onCapture, onClose }: CameraInterfaceProps) {
   const [isStreamActive, setIsStreamActive] = useState(false)
   const [facingMode, setFacingMode] = useState<"user" | "environment">("environment")
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode },
-        audio: false,
-      })
+  
+const startCamera = useCallback(async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode },
+      audio: false,
+    });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setIsStreamActive(true)
-      }
-    } catch (err) {
-      console.error("Error accessing camera:", err)
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
+      setIsStreamActive(true);
     }
+  } catch (err) {
+    console.error("Error accessing camera:", err);
   }
+}, [facingMode]);
+
+useEffect(() => {
+  startCamera();
+  return () => stopCamera();
+}, [facingMode, startCamera]);
 
   const stopCamera = () => {
     if (videoRef.current?.srcObject) {
@@ -46,32 +52,33 @@ export function CameraInterface({ onCapture, onClose }: CameraInterfaceProps) {
   }
 
   const captureImage = () => {
+    
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current
       const canvas = canvasRef.current
       const context = canvas.getContext("2d")
 
       if (context) {
+        console.log("Video dimensions:", video.videoWidth, video.videoHeight);
+        
         // Set canvas dimensions to match video
         canvas.width = video.videoWidth
         canvas.height = video.videoHeight
+        
+        console.log("Canvas dimensions:", canvas.width, canvas.height);
 
         // Draw the video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
         // Convert to base64
         const imageData = canvas.toDataURL("image/jpeg")
+        console.log("Image captured, length:", imageData.length);
+        
         onCapture(imageData)
         stopCamera()
       }
     }
   }
-
-  // Start camera when component mounts
-  useState(() => {
-    startCamera()
-    return () => stopCamera()
-  }, [facingMode])
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">

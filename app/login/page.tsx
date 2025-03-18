@@ -148,7 +148,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
@@ -170,7 +170,7 @@ export default function LoginPage() {
                 Tiếp tục với Google
               </Button>
             </div>
-          </div>
+          </div> */}
 
           <p className="mt-4 text-center text-sm text-gray-600">
             Bạn chưa có tài khoản?{" "}

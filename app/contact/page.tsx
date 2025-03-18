@@ -14,8 +14,8 @@ export default function ContactPage() {
           className="mx-auto h-24 mb-6"
         />
       </div>
-
-      <div className="grid gap-8 md:grid-cols-2">
+{/* md:grid-cols-2 */}
+      <div className="grid gap-8 ">
         {/* Contact Information */}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-6">Kết nối với chúng tôi</h2>
@@ -45,11 +45,15 @@ export default function ContactPage() {
                 <br />
               </address>
             </div>
+            <div className="flex items-center gap-3">
+              <p> Tính năng gửi form sẽ được cập nhật sau.</p>
+            </div>
           </div>
+          
         </div>
 
-        {/* Contact Form */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        {/* Contact Form  will be updated later*/}
+        {/* <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h2 className="text-2xl font-bold mb-6">Kết nối ngay</h2>
           <form className="space-y-4">
             <div className="space-y-2">
@@ -95,7 +99,7 @@ export default function ContactPage() {
               Gửi tin nhắn
             </Button>
           </form>
-        </div>
+        </div> */}
       </div>
     </div>
   );

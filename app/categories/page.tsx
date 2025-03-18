@@ -18,10 +18,10 @@ export default function CategoriesPage() {
       </div>
       
       {/* Category Grid */}
-      <div className="mb-12">
+      {/* <div className="mb-12">
         <h2 className="text-2xl font-bold mb-6">Tất cả danh mục</h2>
         <CategoryGrid />
-      </div>
+      </div> */}
     </div>
   );
 } 

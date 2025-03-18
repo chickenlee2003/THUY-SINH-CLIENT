@@ -62,8 +62,8 @@ export default function SupportPage() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-2">Hỗ trợ khách hàng</h1>
       <p className="text-gray-500 mb-8">Chúng tôi luôn sẵn sàng hỗ trợ bạn với mọi thắc mắc về sản phẩm và dịch vụ</p>
-      
-      <div className="grid gap-8 md:grid-cols-2">
+      {/* md:grid-cols-2 */}
+      <div className="grid gap-8 ">
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -78,7 +78,7 @@ export default function SupportPage() {
                 <div>
                   <p className="font-medium">Email</p>
                   <a href="mailto:support@fishmarket.com" className="text-teal-600 hover:underline">
-                    support@fishmarket.com
+                    spsuperprosp@gmail.com
                   </a>
                 </div>
               </div>
@@ -88,9 +88,9 @@ export default function SupportPage() {
                 <div>
                   <p className="font-medium">Hotline</p>
                   <a href="tel:1900123456" className="text-teal-600 hover:underline">
-                    1900 123 456
+                    0349301982
                   </a>
-                  <p className="text-sm text-gray-500">Hỗ trợ: 8:00 - 20:00 (Thứ 2 - Chủ nhật)</p>
+                  <p className="text-sm text-gray-500">Hỗ trợ: 10:00 - 19:00 (Thứ 2 - Chủ nhật)</p>
                 </div>
               </div>
               
@@ -98,7 +98,7 @@ export default function SupportPage() {
                 <MapPin className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Địa chỉ</p>
-                  <p>180/8D, Hưng Lợi Ninh Kiều Cần THơ</p>
+                  <p>180/8D, Hưng Lợi, Ninh Kiều, Cần Thơ</p>
                 </div>
               </div>
             </CardContent>
@@ -118,23 +118,12 @@ export default function SupportPage() {
                   Chính sách giao hàng
                 </h3>
                 <p className="text-gray-600 mt-1">
-                  Chúng tôi giao hàng miễn phí trong nội thành TP. Cần Thơ cho đơn hàng từ 300.000đ. 
-                  Thời gian giao hàng dự kiến từ 1-3 giờ tùy khu vực.
+                   Chúng tôi vận chuyển cá toàn quốc với phí 30.000đ . Cá được đóng gói cẩn thận với túi oxy đảm bảo an toàn. Thời gian giao hàng từ 1-3 ngày tùy khu vực.
                 </p>
               </div>
               
               <Separator />
-              
-              <div>
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-teal-500" />
-                  Thời gian bảo quản sản phẩm
-                </h3>
-                <p className="text-gray-600 mt-1">
-                  Các sản phẩm hải sản tươi sống nên được bảo quản trong tủ lạnh ở nhiệt độ 0-4°C 
-                  và sử dụng trong vòng 24 giờ để đảm bảo độ tươi ngon.
-                </p>
-              </div>
+
               
               <Separator />
               
@@ -152,7 +141,7 @@ export default function SupportPage() {
           </Card>
         </div>
         
-        <div>
+        {/* <div>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -247,7 +236,7 @@ export default function SupportPage() {
               </form>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </div>
   );

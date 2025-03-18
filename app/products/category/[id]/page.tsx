@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import productService from "@/services/product.service";
 import { CategorySidebar } from "@/components/category-sidebar";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Review {
   reviewId: number;
@@ -53,6 +55,10 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<string>("default");
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(12);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -70,6 +76,11 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     }
 
     fetchProducts();
+  }, [id]);
+
+  // Reset to first page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
   }, [id]);
 
   useEffect(() => {
@@ -105,6 +116,17 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     setProducts(sortedProducts);
   }, [sort]);
 
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+
   if (!id) {
     notFound();
   }
@@ -117,7 +139,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
         <div className="md:col-span-3">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Sản phẩm theo danh mục</h1>
+            {/* <h1 className="text-2xl font-bold">Sản phẩm theo danh mục</h1> */}
             <Select defaultValue="default" onValueChange={setSort}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sắp xếp theo" />
@@ -143,7 +165,47 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               <p className="text-gray-500">Không có sản phẩm nào trong danh mục này.</p>
             </div>
           ) : (
-            <ProductGrid products={products} />
+            <>
+              <ProductGrid products={currentItems} />
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center mt-8 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={prevPage} 
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={currentPage === i + 1 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => paginate(i + 1)}
+                      className="min-w-[40px]"
+                    >
+                      {i + 1}
+                    </Button>
+                  )).slice(
+                    Math.max(0, currentPage - 3),
+                    Math.min(totalPages, currentPage + 2)
+                  )}
+                  
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={nextPage} 
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

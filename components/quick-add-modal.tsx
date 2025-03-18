@@ -101,7 +101,7 @@ export function QuickAddModal({
           <div className="flex items-center justify-between border-t pt-4">
             <span className="text-sm text-gray-500">Total Price</span>
             <span className="text-lg font-bold text-teal-600">
-              ₹{totalPrice.toFixed(2)}
+             {totalPrice.toFixed(2)} VNĐ
             </span>
           </div>
           <Button className="w-full">Thêm vào giỏ hàng</Button>

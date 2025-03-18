@@ -57,7 +57,7 @@ export default function RegisterPage() {
       {/* Phía trái - Hình ảnh */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img
-          src="/placeholder.svg"
+         src="/reg.jpg"
           alt="Aquarium"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -70,7 +70,7 @@ export default function RegisterPage() {
           {/* Logo */}
           <div className="flex flex-col items-center">
             <img
-              src="/placeholder.svg"
+              src="/logo.jpg"
               alt="Fish Logo"
               className="h-12 w-12 text-teal-600"
             />
@@ -208,7 +208,7 @@ export default function RegisterPage() {
             </div>
           </form>
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                 Tiếp tục với Google
               </Button>
             </div>
-          </div>
+          </div> */}
 
           <p className="mt-4 text-center text-sm text-gray-600">
             Đã có tài khoản?{" "}

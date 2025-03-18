@@ -26,7 +26,6 @@ export default function ProfilePage() {
     phoneNumber: "",
     avatar: "", // Change photo to avatar
     password: "",
-    confirmPassword: "",
     role: "ROLE_USER", // Set a default role
     isActive: true, // Ensure isActive is present and set to a default value
   });
@@ -217,7 +216,7 @@ export default function ProfilePage() {
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
-                value={user.phoneNumber}
+                value={user.phoneNumber || ""}
                 onChange={handleChange}
                 placeholder="Số điện thoại của bạn"
                 className="mt-1"

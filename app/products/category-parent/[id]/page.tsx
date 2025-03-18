@@ -117,7 +117,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
         <div className="md:col-span-3">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Sản phẩm theo danh mục</h1>
+            {/* <h1 className="text-2xl font-bold">Sản phẩm theo danh mục</h1> */}
             <Select defaultValue="default" onValueChange={setSort}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sắp xếp theo" />
