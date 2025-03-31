@@ -172,3 +172,30 @@ export interface OrderDetailDTO {
   orderDetailAmount: number;
   // Add other fields as necessary
 } 
+
+
+export interface ReviewSubmitData {
+  userId: number;
+  productId: number;
+  rating: number;
+  comment: string;
+}
+
+export interface ReviewResponse {
+  id: number;
+  reviewId?: number;
+  userId: number;
+  productId: number;
+  rating: number;
+  comment: string;
+  createdAt?: string;
+  adminReply?: string;
+  user?: {
+    name?: string;
+    fullName?: string;
+    avatar?: string;
+    userId?: number;
+    email?: string;
+    phoneNumber?: string;
+  };
+}

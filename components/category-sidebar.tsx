@@ -9,9 +9,7 @@ import {
   Container,
   Droplets,
   FishIcon as MonsterFish,
-  Shell,
   ShellIcon as ShrimpIcon,
-  Anchor,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,10 +27,12 @@ const categories = [
 
 interface CategorySidebarProps {
   activeCategory?: string;
+  onCategorySelect?: (categoryId: number | null) => void;
 }
 
 export function CategorySidebar({
   activeCategory = "all",
+  onCategorySelect,
 }: CategorySidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,6 +42,14 @@ export function CategorySidebar({
     const params = new URLSearchParams(searchParams);
     params.set("category", categoryId);
     const categoryUrl = categoryId;
+    
+    // Extract category ID if numeric value is present in the categoryId string
+    if (onCategorySelect) {
+      const match = categoryId.match(/\/category(?:-parent)?\/(\d+)/);
+      const numericId = match ? parseInt(match[1]) : null;
+      onCategorySelect(numericId);
+    }
+    
     router.push(`/products/${categoryUrl}`);
   };
 

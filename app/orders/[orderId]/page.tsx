@@ -219,12 +219,12 @@ export default function OrderDetailPage() {
                   <span>Tạm tính</span>
                   <span>{formatCurrency(order.totalAmount)}</span>
                 </div>
-                {order.shippingFee && (
+               
                   <div className="flex justify-between">
                     <span>Phí vận chuyển</span>
                     <span>{formatCurrency(order.shippingFee)}</span>
                   </div>
-                )}
+              
                 {order.totalDiscount && (
                   <div className="flex justify-between">
                     <span>Giảm giá</span>

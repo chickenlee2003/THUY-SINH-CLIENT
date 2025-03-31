@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Star, HelpCircle, Heart } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 import { toast } from "react-toastify";
 import cartItemService from "@/services/cartItem.service";
 
@@ -95,10 +95,12 @@ export function ProductDetails({
     }
   };
 
-  // Test toast function to verify toast is working
-  const testToast = () => {
-    toast.success("Test toast notification");
-  };
+  // Calculate average rating from reviews
+  const averageRating = reviews.length 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : 0;
+  
+  const roundedRating = Math.round(averageRating);
 
   return (
     <div className="space-y-6">
@@ -106,13 +108,23 @@ export function ProductDetails({
         <h1 className="text-2xl font-bold">{productName}</h1>
         <div className="mt-2 flex items-center gap-2">
           <div className="flex">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="h-4 w-4 text-gray-300" />
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star 
+                key={star} 
+                className={`h-4 w-4 ${
+                  star <= roundedRating 
+                    ? "text-yellow-400 fill-yellow-400" 
+                    : "text-gray-300"
+                }`} 
+              />
             ))}
           </div>
-          <span className="text-sm text-gray-500">
-            ({reviews.length} đánh giá)
-          </span>
+          <div className="flex items-center gap-1 text-sm">
+            <span className="font-medium text-teal-600">{averageRating.toFixed(1)}</span>
+            <span className="text-gray-500">
+              ({reviews.length} đánh giá)
+            </span>
+          </div>
         </div>
       </div>
 
@@ -151,7 +163,9 @@ export function ProductDetails({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Giá</span>
-            <span className="text-teal-600">{new Intl.NumberFormat('vi-VN').format(productPrice)} VNĐ</span>
+            <span className="text-teal-600"> 
+            {formatCurrency(productPrice)}
+            </span>
           </div>
         </div>
 
@@ -194,7 +208,8 @@ export function ProductDetails({
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500">Tổng giá</span>
             <span className="text-xl font-bold text-teal-600">
-              {new Intl.NumberFormat('vi-VN').format(totalPrice)} VNĐ
+             
+              {formatCurrency(totalPrice)}
             </span>
           </div>
           <div className="mt-4 flex gap-4">
@@ -227,10 +242,10 @@ export function ProductDetails({
           </div>
         </div>
 
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <span className="text-sm text-gray-500">Mô tả</span>
           <p className="text-gray-700">{productDescription}</p>
-        </div>
+        </div> */}
 
         {/* <div className="space-y-2">
           <span className="text-sm text-gray-500">Chia sẻ</span>

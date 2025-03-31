@@ -286,6 +286,12 @@ export default function PurchaseHistoryPage() {
 
                   {/* Tổng giá và ghi chú */}
                   <div className="border-t pt-4 mt-4 space-y-2">
+                 
+                      <div className="flex justify-between items-center text-gray-600">
+                        <span>Phí vận chuyển:</span>
+                        <span>{order.shippingFee || 0}  VNĐ</span>
+                      </div>
+                 
                     {order.orderNote && (
                       <div className="flex justify-between items-center text-gray-600">
                         <span>Ghi chú:</span>

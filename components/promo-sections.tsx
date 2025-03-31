@@ -8,8 +8,11 @@ export function PromoSections() {
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative p-8">
           <h2 className="text-3xl font-bold text-white mb-4">
-            DỊCH VỤ BẢO TRÌ
+
+            <Link href="/contact">DỊCH VỤ BẢO TRÌ</Link>
           </h2>
+       
+
           <Button
             asChild
             variant="outline"
@@ -22,7 +25,9 @@ export function PromoSections() {
       <div className="relative overflow-hidden rounded-lg bg-[url('/beca.jfif')] bg-cover bg-center">
         <div className="absolute inset-0 bg-black/40" />
         <div className="relative p-8">
-          <h2 className="text-3xl font-bold text-white mb-4">HỒ CÁ</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">
+          <Link href="/contact"> HỒ CÁ</Link>
+           </h2>
           <Button
             asChild
             variant="outline"

@@ -20,11 +20,17 @@ export function CartSummary({ subtotal, shippingFee, total, voucherCode, onApply
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Tạm tính</span>
-            <span>₫{subtotal.toLocaleString()}</span>
+            <span>{subtotal.toLocaleString()} VNĐ</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Phí vận chuyển</span>
-            <span>₫{shippingFee.toLocaleString()}</span>
+            {/* miễn phí với đơn hàng hơn 1.000.000đ */}
+            
+            <span>{shippingFee.toLocaleString()} VNĐ</span>
+
+          </div>
+          <div>
+            <p> Miễn phí  với đơn hàng hơn 1.000.000đ </p>
           </div>
         </div>
 
@@ -36,7 +42,7 @@ export function CartSummary({ subtotal, shippingFee, total, voucherCode, onApply
         <div className="border-t pt-4">
           <div className="flex justify-between font-medium">
             <span>Tổng cộng</span>
-            <span className="text-lg text-teal-600">₫{total.toLocaleString()}</span>
+            <span className="text-lg text-teal-600">{total.toLocaleString()}VNĐ</span>
           </div>
           <p className="mt-1 text-xs text-gray-500">(Đã bao gồm VAT nếu có)</p>
         </div>

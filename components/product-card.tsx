@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { AddToCartModal } from "./add-to-cart-modal";
 import { wishlistService } from "@/services/wishlist.service";
 import { toast } from "react-toastify";
+import { formatCurrency } from "@/lib/utils";
 
 interface ProductCardProps {
   productId: number;
@@ -112,7 +113,8 @@ export function ProductCard({
             <div className="space-y-1 p-4">
               <h3 className="text-center font-extralight">{productName}</h3>
               <p className="text-center font-semibold text-teal-600">
-                {new Intl.NumberFormat('vi-VN').format(productPrice)} VNĐ
+                {/* {new Intl.NumberFormat('vi-VN').format(productPrice)}  */}
+                {formatCurrency(productPrice)}
               </p>
             </div>
           </CardContent>

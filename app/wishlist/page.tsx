@@ -25,7 +25,7 @@ export default function WishListPage() {
         const response = await wishlistService.getWishlistByUserId(userId);
         setWishlist(response.data);
       } catch (err) {
-        console.error("Error fetching wishlist:", err);
+        console.log("Error fetching wishlist:", err);
         setError("Không thể tải danh sách yêu thích. Vui lòng thử lại sau.");
       } finally {
         setIsLoading(false);

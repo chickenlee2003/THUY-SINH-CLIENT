@@ -4,11 +4,14 @@ import { ILoginRequest, ILoginResponse } from "../types/backend";
 export const authService = {
   async login(credentials: ILoginRequest): Promise<ILoginResponse> {
     const response = await apiClient.post("/auth/login", credentials);
-    const { id, token, role } = response.data;
+    const { id, token, role, avatar , fullName } = response.data;
+    console.log("Login response:", response.data);
     localStorage.setItem("token", token);
     localStorage.setItem("id", id);
     localStorage.setItem("role", role);
-    
+   localStorage.setItem("avatar", avatar);
+   localStorage.setItem("fullName", fullName);
+
     return response.data;
   },
 

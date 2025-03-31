@@ -8,7 +8,16 @@ import { ProductReviews } from "@/components/product-reviews";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import productService from "@/services/product.service";
+import reviewService from "@/services/review.service";
 import { use } from "react";
+import type { ReviewResponse } from "@/types/backend";
+
+interface ProductReview {
+  reviewId: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 
 interface Product {
   productId: number;
@@ -16,13 +25,14 @@ interface Product {
   productPrice: number;
   productDescription: string;
   productQuantity: number;
-  productStatus: "AVAILABLE" | "UNAVAILABLE" ;
+  productSold: number;
+  productStatus: "AVAILABLE" | "UNAVAILABLE";
   categoryId: number;
   images: Array<{
     imageId: number;
     imageUrl: string;
   }>;
-  reviews: any[]; // Thay đổi kiểu dữ liệu reviews nếu cần
+  reviews: ProductReview[]; 
   createdAt: string;
 }
 
@@ -35,25 +45,37 @@ interface ProductPageProps {
 export default function ProductPage({ params }: ProductPageProps) {
   const { id } = use(params);
   const [product, setProduct] = useState<Product | null>(null);
+  const [apiReviews, setApiReviews] = useState<ReviewResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchProduct() {
+    async function fetchProductData() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await productService.getProductById(Number(id));
-        setProduct(response.data);
+        // First get the product details
+        const productResponse = await productService.getProductById(Number(id));
+        setProduct(productResponse.data);
+        
+        // Then try to get reviews separately to handle potential review API errors
+        try {
+          const reviewsResponse = await reviewService.getProductReviews(Number(id));
+          setApiReviews(reviewsResponse);
+        } catch (reviewErr) {
+          console.error("Error fetching reviews:", reviewErr);
+          // Don't set error state for the whole page if just reviews fail
+          setApiReviews([]);
+        }
       } catch (err) {
-        console.error("Error fetching product:", err);
+        console.error("Error fetching product data:", err);
         setError("Failed to load product. Please try again later.");
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchProduct();
+    fetchProductData();
   }, [id]);
 
   if (isLoading) {
@@ -81,7 +103,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 flex items-center gap-2 text-sm">
-        
         <Link href="/" className="hover:text-teal-600">
           Trang chủ
         </Link>
@@ -100,12 +121,20 @@ export default function ProductPage({ params }: ProductPageProps) {
         <ProductImageGallery images={product.images} />
         <ProductDetails {...product} />
       </div>
+      
+      {/* Product Description */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
+        <div className="prose max-w-none bg-gray-50 p-6 rounded-lg">
+          <div dangerouslySetInnerHTML={{ __html: product.productDescription }} />
+        </div>
+      </div>
 
-      {/* <ProductReviews
+      {/* Product Reviews */}
+      <ProductReviews
         productId={product.productId}
-        reviews={product.reviews}
-        description={product.productDescription}
-      /> */}
+        reviews={apiReviews}
+      />
     </div>
   );
 }

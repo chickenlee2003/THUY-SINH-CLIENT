@@ -30,6 +30,7 @@ export default function LoginPage() {
       router.refresh(); // Refresh the page to update authentication state
     } catch (err: any) {
       setError(err.message || "Invalid email or password");
+      toast.error( error);
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +129,8 @@ export default function LoginPage() {
                     htmlFor="remember"
                     className="ml-2 block text-sm text-gray-700"
                   >
-                    Ghi nhớ tài khoản
+                    
+                    
                   </label>
                 </div>
                 <Link

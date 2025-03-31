@@ -196,10 +196,14 @@ export default function CheckoutPage() {
         return;
       }
 
+      const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const shippingFee = subtotal >= 1000000 ? 0 : 35000;
+
       const orderData = {
         locationId: selectedAddress,
         orderNote,
         voucherId: voucherCode,
+        shippingFee
       };
 
       const orderResponse = await orderService.createOrder(Number(userId), orderData);
@@ -212,10 +216,6 @@ export default function CheckoutPage() {
       setIsSubmitting(false);
     }
   };
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingFee = 0;
-  const total = subtotal + shippingFee;
 
   const handleSelectAddress = (locationId: number) => {
     setSelectedAddress(locationId);
@@ -368,9 +368,9 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div className="space-y-6">
           <CartSummary
-            subtotal={subtotal}
-            shippingFee={shippingFee}
-            total={total}
+            subtotal={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)}
+            shippingFee={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) >= 1000000 ? 0 : 35000}
+            total={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + (cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) >= 1000000 ? 0 : 35000)}
             voucherCode={voucherCode}
             onApplyVoucher={setVoucherCode}
           />

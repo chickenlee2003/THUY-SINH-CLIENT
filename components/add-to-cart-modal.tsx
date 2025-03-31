@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 // import { cn } from "@/lib/utils";
 import cartItemService from "@/services/cartItem.service";
 import { toast } from "react-toastify";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 interface AddToCartModalProps {
   isOpen: boolean;
@@ -94,7 +94,7 @@ export function AddToCartModal({
               <div>
                 <div className="text-sm text-gray-500">Giá</div>
                 <div className="text-teal-600">
-                  {new Intl.NumberFormat('vi-VN').format(product.productPrice)} VNĐ
+                  {formatCurrency(product.productPrice)}
                 </div>
               </div>
               <div>
@@ -151,7 +151,8 @@ export function AddToCartModal({
             <div className="flex items-center justify-between border-t pt-4">
               <span className="text-sm text-gray-500">Tổng tiền:</span>
               <span className="text-xl font-bold text-teal-600">
-                {new Intl.NumberFormat('vi-VN').format(totalPrice)} VNĐ
+              
+                {formatCurrency(totalPrice)}
               </span>
             </div>
             <Button

@@ -29,6 +29,18 @@ export default function RegisterPage() {
       toast.error("Mật khẩu và xác nhận mật khẩu không khớp.");
       return;
     }
+    //validate email
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      toast.error("Email không hợp lệ.");
+      return;
+    }
+    // fullname must be at least 3 characters
+    if (fullName.length < 3) {
+      toast.error("Họ và tên phải có ít nhất 3 ký tự.");
+      return;
+    }
+
     try {
       const newUser = {
         email,
@@ -47,8 +59,7 @@ export default function RegisterPage() {
         toast.error("Đăng ký không thành công. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Error creating user:", error);
-      toast.error("Đã xảy ra lỗi. Vui lòng thử lại.");
+      toast.error( error);
     }
   };
 

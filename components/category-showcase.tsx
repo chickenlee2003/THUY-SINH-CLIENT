@@ -55,7 +55,7 @@ export function CategoryShowcase() {
               </Card>
             ))}
           </div>
-        </div>
+        </div>  
       </section>
     );
   }
@@ -103,14 +103,14 @@ export function CategoryShowcase() {
           ))}
         </div>
 
-        <div className="mt-10 text-center">
+        {/* <div className="mt-10 text-center">
           <Link href="/categories">
             <Button variant="outline" className="rounded-full px-6">
               Xem tất cả danh mục
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
     </section>
   );
