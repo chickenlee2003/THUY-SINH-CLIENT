@@ -222,7 +222,7 @@ export default function OrderDetailPage() {
                
                   <div className="flex justify-between">
                     <span>Phí vận chuyển</span>
-                    <span>{formatCurrency(order.shippingFee)}</span>
+                    <span>{formatCurrency(order.shippingFee || 0 )}</span>
                   </div>
               
                 {order.totalDiscount && (

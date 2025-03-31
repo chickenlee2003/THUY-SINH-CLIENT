@@ -30,7 +30,7 @@ export default function LoginPage() {
       router.refresh(); // Refresh the page to update authentication state
     } catch (err: any) {
       setError(err.message || "Invalid email or password");
-      toast.error( error);
+      console.log( error);
     } finally {
       setIsLoading(false);
     }

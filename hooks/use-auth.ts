@@ -21,7 +21,7 @@ export function useAuth() {
       await authService.logout();
       setIsAuthenticated(false);
       router.push("/");
-      router.refresh();
+      //router.refresh();
       toast.success("Đăng xuất thành công");
     } catch (error) {
       console.error("Logout failed:", error);

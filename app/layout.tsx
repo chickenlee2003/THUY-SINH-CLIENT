@@ -3,10 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { Chatbot } from "@/components/chatbot"
+import { AuthProvider } from "./auth-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,11 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <Chatbot />
-        <ToastProvider />
+        <AuthProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <Chatbot />
+     
+        </AuthProvider>
+
+             <ToastProvider />
       </body>
     </html>
   );

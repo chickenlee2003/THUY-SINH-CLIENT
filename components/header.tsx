@@ -249,12 +249,12 @@ export function Header() {
               {isAuthenticated ? (
                 <>
                   {/* Wishlist Button */}
-                  <Link href="/wishlist" className="hover:text-teal-600">
+                  {/* <Link href="/wishlist" className="hover:text-teal-600">
                     <Button variant="outline" className="flex items-center gap-2">
                       <Heart className="h-5 w-5 text-red-500" />
                       <span>Danh sách yêu thích</span>
                     </Button>
-                  </Link>
+                  </Link> */}
 
                   {/* Avatar Dropdown */}
                   <div className="relative group z-50">

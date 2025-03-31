@@ -148,7 +148,7 @@ export function ProductDetails({
             <HelpCircle className="h-4 w-4" />
             Hỏi về sản phẩm
           </Button> */}
-          <Button 
+          {/* <Button 
             variant="outline" 
             size="sm" 
             className="gap-2"
@@ -156,7 +156,7 @@ export function ProductDetails({
           >
             <Heart className={`h-4 w-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
             Thêm vào danh sách yêu thích
-          </Button>
+          </Button> */}
       
         </div>
 

@@ -7,8 +7,8 @@ import { BestSelling } from "@/components/best-selling";
 import { KoiPond } from "@/components/koi-pond";
 import { NewProducts } from "@/components/new-products";
 import { FooterLinks } from "@/components/footer-links";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 
 
 const featuredCategories = [
@@ -48,7 +48,7 @@ export default function Home() {
           <BestSelling />
           {/* <NewProducts /> */} 
           {/* <FooterLinks /> */}
-          <ToastContainer />
+          {/* <ToastContainer /> */}
         </div>
       </div>
     </div>

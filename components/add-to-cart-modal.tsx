@@ -41,7 +41,6 @@ export function AddToCartModal({
   }, [product.productPrice, quantity]);
 
   const handleAddToCart = async () => {
-    debugger;
     const userId = Number(localStorage.getItem("id"));
     if (!userId) {
       toast.error("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");

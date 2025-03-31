@@ -11,8 +11,13 @@ export const authService = {
     localStorage.setItem("role", role);
    localStorage.setItem("avatar", avatar);
    localStorage.setItem("fullName", fullName);
+    
+//reload page after login and redirect to home page
+    window.location.href = "/";
+    
 
     return response.data;
+
   },
 
   async logout(): Promise<void> {
@@ -20,6 +25,9 @@ export const authService = {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
     localStorage.removeItem("role");
+    localStorage.removeItem("avatar");
+    localStorage.removeItem("fullName");
+    localStorage.clear();
   },
 
   isAuthenticated(): boolean {

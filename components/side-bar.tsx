@@ -16,13 +16,13 @@ interface SidebarProps {
 
 export default function Sidebar({ user, activePath }: SidebarProps) {
   const navItems = [
-    { path: "/dashboard", label: "Bảng điều khiển", icon: Home },
+    { path: "/", label: "Trang chủ", icon: Home },
     { path: "/purchase-history", label: "Lịch sử mua hàng", icon: ShoppingBag },
     // { path: "/downloads", label: "Tải xuống", icon: Download },
-    { path: "/wishlist", label: "Danh sách yêu thích", icon: Heart },
-    { path: "/support-ticket", label: "Hỗ trợ", icon: TicketCheck },
+    // { path: "/wishlist", label: "Danh sách yêu thích", icon: Heart },
+    // { path: "/support-ticket", label: "Hỗ trợ", icon: TicketCheck },
     { path: "/profile", label: "Quản lý hồ sơ", icon: User },
-    { path: "/delete-account", label: "Xóa tài khoản", icon: Trash2 },
+    // { path: "/delete-account", label: "Xóa tài khoản", icon: Trash2 },
   ]
 
   return (
@@ -59,12 +59,12 @@ export default function Sidebar({ user, activePath }: SidebarProps) {
         })}
       </nav>
 
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <Button variant="default" className="w-full bg-teal-600 hover:bg-teal-700">
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4"  />
           Đăng xuất
         </Button>
-      </div>
+      </div> */}
     </div>
   )
 }
