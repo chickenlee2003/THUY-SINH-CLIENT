@@ -163,6 +163,8 @@ export interface OrderResponseDTO {
   orderDetails?: OrderDetailDTO[];
   location?: LocationDTO;
   payment?: PaymentResponseDTO;
+  orderAddress?: string;
+  orderPhoneNumber?: string;
 }
 
 export interface OrderDetailDTO {

@@ -124,7 +124,7 @@ export default function LoginPage() {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Checkbox id="remember" className="border-gray-300" />
+                  {/* <Checkbox id="remember" className="border-gray-300" /> */}
                   <label
                     htmlFor="remember"
                     className="ml-2 block text-sm text-gray-700"
@@ -133,12 +133,12 @@ export default function LoginPage() {
                     
                   </label>
                 </div>
-                <Link
+                {/* <Link
                   href="/forgot-password"
                   className="text-sm text-teal-600 hover:text-teal-500"
                 >
                   Quên mật khẩu?
-                </Link>
+                </Link> */}
               </div>
 
               <Button

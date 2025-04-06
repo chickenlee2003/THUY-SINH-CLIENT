@@ -61,7 +61,9 @@ export default function CartPage() {
       } else {
         console.log("Product ID is undefined, cannot remove item from cart.");
       }
+      toast.success("Xoá sản phẩm thành công.");
     } catch (error) {
+      toast.error("Xoá sản phẩm không thành công.");
       console.log("Failed to remove item from cart:", error);
     }
   };

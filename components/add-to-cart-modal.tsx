@@ -50,7 +50,8 @@ export function AddToCartModal({
 
     try {
       await cartItemService.addItemToCart(product.productId, quantity, userId);
-      toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
+    //  toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
+    toast.success(`Đã thêm ${quantity} ${product.productName} vào giỏ hàng!`)
       onClose();
     } catch (error) {
       console.error("Failed to add item to cart:", error);

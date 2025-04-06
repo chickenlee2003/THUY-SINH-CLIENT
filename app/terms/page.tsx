@@ -12,7 +12,7 @@ export default function TermsPage() {
         <div className="space-y-6">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-teal-600">Điều khoản và Điều kiện</h1>
-            <p className="text-gray-500 mt-2">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN')}</p>
+            {/* <p className="text-gray-500 mt-2">Cập nhật lần cuối: {new Date().toLocaleDateString('vi-VN')}</p> */}
           </div>
 
           <ScrollArea className="h-[60vh] pr-4">
@@ -93,11 +93,11 @@ export default function TermsPage() {
           </ScrollArea>
 
           <div className="flex justify-center space-x-4 pt-4">
-            <Button asChild variant="outline">
-              <Link href="/register">
-                Quay lại đăng ký
+            {/* <Button asChild variant="outline">
+              <Link href="/">
+                Quay lại trang chủ
               </Link>
-            </Button>
+            </Button> */}
             <Button asChild className="bg-teal-600 hover:bg-teal-700">
               <Link href="/">
                 Trang chủ

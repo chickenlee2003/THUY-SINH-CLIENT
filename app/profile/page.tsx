@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import userService from "@/services/user.service" // Import userService
-import uploadService from "@/services/upload.service" // Import uploadService
-import addressService from "@/services/address.service" // New service for address management
-import { useAuth } from "@/hooks/use-auth" // Import useAuth hook
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import userService from "@/services/user.service"; // Import userService
+import uploadService from "@/services/upload.service"; // Import uploadService
+import addressService from "@/services/address.service"; // New service for address management
+import { useAuth } from "@/hooks/use-auth"; // Import useAuth hook
 import { IUser, IAddress } from "@/types/backend"; // Ensure IUser and IAddress are imported
 import { toast } from "react-toastify"; // Import toast for notifications
 // import dynamic from "next/dynamic"
@@ -48,9 +54,13 @@ export default function ProfilePage() {
     const fetchUserData = async () => {
       if (isAuthenticated) {
         try {
-          const response = await userService.getUserById(Number(localStorage.getItem("id"))); // Replace with actual user ID
+          const response = await userService.getUserById(
+            Number(localStorage.getItem("id"))
+          ); // Replace with actual user ID
           setUser(response.data);
-          const addressesResponse = await addressService.getAddressesByUserId(Number(localStorage.getItem("id")));
+          const addressesResponse = await addressService.getAddressesByUserId(
+            Number(localStorage.getItem("id"))
+          );
           setAddresses(addressesResponse.data);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -73,7 +83,9 @@ export default function ProfilePage() {
 
   const fetchDistricts = async (provinceCode: string) => {
     try {
-      const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
+      );
       const data = await response.json();
       setDistricts(data.districts);
     } catch (error) {
@@ -83,7 +95,9 @@ export default function ProfilePage() {
 
   const fetchWards = async (districtCode: string) => {
     try {
-      const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`
+      );
       const data = await response.json();
       setWards(data.wards);
     } catch (error) {
@@ -120,7 +134,12 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber || null, // Ensure phoneNumber is not null
       };
 
-      const response = await userService.updateUser(Number(localStorage.getItem("id")), updatedUser);
+      const response = await userService.updateUser(
+        Number(localStorage.getItem("id")),
+        updatedUser
+      );
+      localStorage.setItem("avatar", response.data.avatar);
+
       console.log("Cập nhật thông tin thành công:", response.data);
       toast.success("Cập nhật thông tin thành công!"); // Show success message
     } catch (error) {
@@ -137,20 +156,33 @@ export default function ProfilePage() {
   const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      //kiểm tra nếu như nhập thiếu tỉnh huyện xã thì không cho thêm địa chỉ
+      if (!selectedProvince || !selectedDistrict || !selectedWard) {
+        toast.error("Vui lòng chọn đầy đủ tỉnh, huyện, xã.");
+        return;
+      }
+
       // Get the names of the selected province, district, and ward
-      const provinceName = provinces.find(province => province.code.toString() === selectedProvince)?.name || '';
-      const districtName = districts.find(district => district.code.toString() === selectedDistrict)?.name || '';
-      const wardName = wards.find(ward => ward.code.toString() === selectedWard)?.name || '';
-      
+      const provinceName =
+        provinces.find(
+          (province) => province.code.toString() === selectedProvince
+        )?.name || "";
+      const districtName =
+        districts.find(
+          (district) => district.code.toString() === selectedDistrict
+        )?.name || "";
+      const wardName =
+        wards.find((ward) => ward.code.toString() === selectedWard)?.name || "";
+
       // Create the full address description with names
       const fullAddress = `${newAddress.description}, ${wardName}, ${districtName}, ${provinceName}`;
-  
+
       const addressToSubmit = {
         ...newAddress,
         description: fullAddress,
         userId: Number(localStorage.getItem("id")),
       };
-  
+
       const response = await addressService.addAddress(addressToSubmit);
       setAddresses((prev) => [...prev, response.data]);
       setNewAddress({ latitude: 0, longitude: 0, description: "", userId: 0 });
@@ -163,22 +195,23 @@ export default function ProfilePage() {
       toast.error("Thêm địa chỉ thất bại.");
     }
   };
-  
 
   const handleDeleteAddress = async (addressId: number) => {
     try {
       await addressService.deleteAddress(addressId);
-      setAddresses((prev) => prev.filter((address) => address.locationId !== addressId));
+      setAddresses((prev) =>
+        prev.filter((address) => address.locationId !== addressId)
+      );
       toast.success("Xóa địa chỉ thành công!");
     } catch (error) {
-      console.error("Xóa địa chỉ thất bại:", error);
-      toast.error("Xóa địa chỉ thất bại.");
+      console.log("Xóa địa chỉ thất bại:", error);
+      toast.error(error || "Xóa địa chỉ thất bại.");
     }
   };
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-8">Quản lý Hồ sơ</h1>
+      <h1 className="text-2xl font-bold mb-8">Quản lý thông tin cá nhân</h1>
 
       {/* Basic Info */}
       <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
@@ -274,7 +307,10 @@ export default function ProfilePage() {
               </SelectTrigger>
               <SelectContent>
                 {provinces.map((province) => (
-                  <SelectItem key={province.code} value={province.code.toString()}>
+                  <SelectItem
+                    key={province.code}
+                    value={province.code.toString()}
+                  >
                     {province.name}
                   </SelectItem>
                 ))}
@@ -294,14 +330,17 @@ export default function ProfilePage() {
               </SelectTrigger>
               <SelectContent>
                 {districts.map((district) => (
-                  <SelectItem key={district.code} value={district.code.toString()}>
+                  <SelectItem
+                    key={district.code}
+                    value={district.code.toString()}
+                  >
                     {district.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div  >
+          <div>
             <Label htmlFor="ward">Phường/Xã</Label>
             <Select onValueChange={(value) => setSelectedWard(value)}>
               <SelectTrigger>
@@ -316,7 +355,7 @@ export default function ProfilePage() {
               </SelectContent>
             </Select>
           </div>
-      
+
           {/* <div className="margin-top-200">
             <Label>Chọn vị trí trên bản đồ</Label>
             <Map
@@ -333,9 +372,16 @@ export default function ProfilePage() {
         <div className="mt-8">
           <h3 className="text-lg font-semibold mb-4">Địa chỉ đã lưu</h3>
           {addresses.map((address) => (
-            <div key={address.locationId} className="flex justify-between items-center border-b py-2">
+            <div
+              key={address.locationId}
+              className="flex justify-between items-center border-b py-2"
+            >
               <span>{address.description}</span>
-              <Button onClick={() => handleDeleteAddress(address.locationId!)} variant="destructive" size="sm">
+              <Button
+                onClick={() => handleDeleteAddress(address.locationId!)}
+                variant="destructive"
+                size="sm"
+              >
                 Xóa
               </Button>
             </div>

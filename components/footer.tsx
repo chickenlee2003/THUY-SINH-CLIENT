@@ -1,8 +1,24 @@
+"use client"
+
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import shopService from "@/services/shop.service";
+import { useEffect, useState } from "react";
+import { IShop } from "@/types/backend";
 
 export function Footer() {
+  const [shop, setShop] = useState<IShop | null>(null);
+
+  useEffect(() => {
+    const fetchShop = async () => {
+      const response = await shopService.getShopById(1);
+      setShop(response);
+      console.log(response);
+    };
+    fetchShop();
+  }, []);
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="container mx-auto px-4 py-12">
@@ -14,9 +30,7 @@ export function Footer() {
               className="h-12"
             />
             <p className="text-sm">
-              Cửa hàng Thủy sinh chuyên nghiệp trực tuyến. Tại đây bạn có thể
-              tìm thấy cá nước mặn, cá nước ngọt, bể cá, thức ăn cho cá, bộ lọc
-              bể, trang trí & cây cảnh, v.v.
+             {shop?.shopDescription}
             </p>
           </div>
           <div className="space-y-4">
@@ -28,42 +42,37 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="https://thuysinhaz.com/kinhnghiemthuysinh/" className="text-sm hover:text-white">
+                  Kinh nghiệm thuỷ sinh
+                </Link>
+              </li>
+              <li>
                 <Link href="/shipping" className="text-sm hover:text-white">
                   Chính sách giao hàng
                 </Link>
               </li>
-              <li>
-                <Link href="/returns" className="text-sm hover:text-white">
-                  Chính sách đổi trả
-                </Link>
-              </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/seller-policy"
                   className="text-sm hover:text-white"
                 >
                   Chính sách người bán
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="space-y-4">
             <h3 className="text-white font-semibold">LIÊN HỆ</h3>
             <div className="space-y-2 text-sm">
-              <p>Địa chỉ</p>
-              <p>
-                180 / 8D hẻm 558 đường 30/4
-                <br />
-                P. Hưng Lợi, Q. Ninh Kiều, TP.
-              </p>
-              <p>Điện thoại</p>
-              <p>0349301982</p>
-              <p>Email</p>
-              <p>spsuperprosp@gmail.com</p>
+              <p>Địa chỉ: {shop?.address}</p>
+
+              <p>Điện thoại: {shop?.shopPhoneNumber}</p>
+        
+              <p>Email: {shop?.shopEmail}</p>
             </div>
           </div>
           <div className="space-y-4">
-            <h3 className="text-white font-semibold">BẢN TIN</h3>
+            {/* <h3 className="text-white font-semibold">BẢN TIN</h3>
             <p className="text-sm">
               Đăng ký nhận bản tin của chúng tôi để cập nhật thường xuyên về Ưu
               đãi, Phiếu giảm giá & hơn thế nữa
@@ -75,7 +84,7 @@ export function Footer() {
                 className="flex-1 px-3 py-2 bg-gray-800 rounded text-white"
               />
               <Button>Đăng ký</Button>
-            </div>
+            </div> */}
             <div className="space-y-4">
               <h3 className="text-white font-semibold">THEO DÕI CHÚNG TÔI</h3>
               <div className="flex gap-4">

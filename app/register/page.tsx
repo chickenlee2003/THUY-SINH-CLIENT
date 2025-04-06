@@ -86,9 +86,9 @@ export default function RegisterPage() {
               className="h-12 w-12 text-teal-600"
             />
             <h2 className="mt-6 text-3xl font-bold text-teal-600">
-              TẠO TÀI KHOẢN
+              ĐĂNG KÝ TÀI KHOẢN
             </h2>
-            <p className="mt-2 text-sm text-gray-600">Đăng ký tài khoản mới.</p>
+            {/* <p className="mt-2 text-sm text-gray-600">Đăng ký tài khoản mới.</p> */}
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

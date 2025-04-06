@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Phone, MapPin, MessageSquare, HelpCircle, Truck, Clock, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import shopService from "@/services/shop.service";
+import { IShop } from "@/types/backend";  
 
 export default function SupportPage() {
+  const [shop, setShop] = useState<IShop | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +21,14 @@ export default function SupportPage() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
+
+  useEffect(() => {
+    const fetchShop = async () => {
+      const response = await shopService.getShopById(1);
+      setShop(response);
+    };
+    fetchShop();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -77,8 +88,8 @@ export default function SupportPage() {
                 <Mail className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <a href="mailto:support@fishmarket.com" className="text-teal-600 hover:underline">
-                    spsuperprosp@gmail.com
+                  <a href="mailto:spsuperprosp@gmail.com" className="text-teal-600 hover:underline">
+                    {shop?.shopEmail}
                   </a>
                 </div>
               </div>
@@ -88,9 +99,9 @@ export default function SupportPage() {
                 <div>
                   <p className="font-medium">Hotline</p>
                   <a href="tel:1900123456" className="text-teal-600 hover:underline">
-                    0349301982
+                    {shop?.shopPhoneNumber}
                   </a>
-                  <p className="text-sm text-gray-500">Hỗ trợ: 10:00 - 19:00 (Thứ 2 - Chủ nhật)</p>
+                  <p className="text-sm text-gray-500">Hỗ trợ: {shop?.workingTime}</p>
                 </div>
               </div>
               
@@ -98,7 +109,7 @@ export default function SupportPage() {
                 <MapPin className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Địa chỉ</p>
-                  <p>180/8D, Hưng Lợi, Ninh Kiều, Cần Thơ</p>
+                    <p>{shop?.address}</p>
                 </div>
               </div>
             </CardContent>
@@ -118,7 +129,7 @@ export default function SupportPage() {
                   Chính sách giao hàng
                 </h3>
                 <p className="text-gray-600 mt-1">
-                   Chúng tôi vận chuyển cá toàn quốc với phí 30.000đ . Cá được đóng gói cẩn thận với túi oxy đảm bảo an toàn. Thời gian giao hàng từ 1-3 ngày tùy khu vực.
+                   Chúng tôi vận chuyển cá toàn quốc với phí 35.000đ cho các đơn hàng dưới 1 triệu đồng. Cá được đóng gói cẩn thận với túi bom oxy đảm bảo an toàn. Thời gian giao hàng từ 1-3 ngày tùy khu vực.
                 </p>
               </div>
               

@@ -25,7 +25,7 @@ export function CategoryShowcase() {
     const fetchCategories = async () => {
       setIsLoading(true);
       try {
-        const response = await apiClient.get("/category");
+        const response = await apiClient.get("/category/active");
         setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

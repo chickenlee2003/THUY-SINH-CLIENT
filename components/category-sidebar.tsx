@@ -38,7 +38,7 @@ export function CategorySidebar({
   const searchParams = useSearchParams();
 
   const handleCategoryClick = (categoryId: string) => {
-    debugger;
+  
     const params = new URLSearchParams(searchParams);
     params.set("category", categoryId);
     const categoryUrl = categoryId;

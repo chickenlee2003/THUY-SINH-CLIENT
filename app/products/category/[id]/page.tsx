@@ -16,6 +16,7 @@ import productService from "@/services/product.service";
 import { CategorySidebar } from "@/components/category-sidebar";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import categoryService from "@/services/category.service";
 
 interface Review {
   reviewId: number;
@@ -58,7 +59,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [sort, setSort] = useState<string>("default");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  
+  const [categoryName, setCategoryName] = useState<string | null>(null);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
@@ -69,8 +70,11 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       setError(null);
       try {
         const response = await productService.getProductsByCategory(Number(id));
-        setAllProducts(response.data);
+        setAllProducts(response.data);  
         setProducts(response.data);
+        const categoryResponse = await categoryService.getCategoryById(Number(id));
+        console.log(categoryResponse);
+        setCategoryName(categoryResponse.categoryName);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to load products. Please try again later.");
@@ -161,7 +165,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
         <div className="md:col-span-3">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Sản phẩm theo danh mục</h1>
+            <h1 className="text-2xl font-bold">Sản phẩm theo danh mục {categoryName}</h1>
             <div className="flex items-center gap-2">
               {isFiltering && (
                 <div className="flex items-center text-sm text-gray-500">

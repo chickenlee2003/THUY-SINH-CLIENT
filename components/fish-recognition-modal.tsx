@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import fishRecognitionService from "@/services/fish-recognition.service"
+import { useRouter } from "next/navigation"
 
 interface FishRecognitionModalProps {
   isOpen: boolean
@@ -13,6 +14,7 @@ interface FishRecognitionModalProps {
 }
 
 export function FishRecognitionModal({ isOpen, onClose, imageData }: FishRecognitionModalProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true)
   const [result, setResult] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -45,6 +47,12 @@ export function FishRecognitionModal({ isOpen, onClose, imageData }: FishRecogni
 
     predictFish()
   }, [isOpen, imageData])
+
+  const handleFindSimilarProducts = () => {
+    if (result) {
+      router.push(`/search?keyword=${encodeURIComponent(result)}`)
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -89,9 +97,12 @@ export function FishRecognitionModal({ isOpen, onClose, imageData }: FishRecogni
               Đóng
             </Button>
             {result && (
-              <Button className="flex-1">
+              <Button className="flex-1"
+              onClick={handleFindSimilarProducts}
+              >
                 Tìm sản phẩm tương tự
               </Button>
+
             )}
           </div>
         </div>

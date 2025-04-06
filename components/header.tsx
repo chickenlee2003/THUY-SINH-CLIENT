@@ -46,6 +46,11 @@ export function Header() {
   const [showResults, setShowResults] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAvatar(localStorage.getItem("avatar"));
+  }, []);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -261,7 +266,7 @@ export function Header() {
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Avatar>
                         <AvatarImage
-                          src="/avatardf.png"
+                          src={avatar || "/avatardf.png"} 
                           alt="User Avatar"
                         />
                         <AvatarFallback>

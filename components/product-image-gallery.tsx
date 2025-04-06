@@ -42,8 +42,8 @@ export function ProductImageGallery({ images }: ProductImageGalleryProps) {
         <Image
           src={selectedImage.imageUrl || "/placeholder.svg"}
           alt="Product image"
-          width={600}
-          height={600}
+          width={400}
+          height={400}
           className="h-full w-full object-cover"
         />
         {isZoomed && (

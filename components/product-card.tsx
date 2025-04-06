@@ -71,7 +71,7 @@ export function ProductCard({
       <Card className="group relative border-teal-600/20">
         {/* Hover Actions */}
         <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
@@ -83,7 +83,7 @@ export function ProductCard({
                 isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"
               }`}
             />
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             size="icon"

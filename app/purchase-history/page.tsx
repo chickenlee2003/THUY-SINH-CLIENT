@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp, CreditCard, XCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { OrderResponseDTO } from '@/types/backend';
-import orderService from '@/services/order.service';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import { toast } from 'react-toastify';
-import apiClient from '@/services/apiClient';
+import { useEffect, useState } from "react";
+import { ChevronDown, ChevronUp, CreditCard, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { OrderResponseDTO } from "@/types/backend";
+import orderService from "@/services/order.service";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import { toast } from "react-toastify";
+import apiClient from "@/services/apiClient";
+import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,16 +39,17 @@ export default function PurchaseHistoryPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const userId = Number(localStorage.getItem('id'));
+        const userId = Number(localStorage.getItem("id"));
         if (!userId) {
-          toast.error('Vui lòng đăng nhập để xem lịch sử mua hàng');
+          toast.error("Vui lòng đăng nhập để xem lịch sử mua hàng");
           return;
         }
         const response = await orderService.getUserOrders(userId);
+        console.log("Fetched orders:", response);
         setOrders(response);
       } catch (error) {
-        console.error('Error fetching orders:', error);
-        toast.error('Không thể tải lịch sử đơn hàng');
+        console.error("Error fetching orders:", error);
+        toast.error("Không thể tải lịch sử đơn hàng");
       } finally {
         setIsLoading(false);
       }
@@ -67,33 +69,33 @@ export default function PurchaseHistoryPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return 'text-yellow-600';
-      case 'PROCESSING':
-        return 'text-blue-600';
-      case 'SHIPPING':
-        return 'text-purple-600';
-      case 'COMPLETED':
-        return 'text-green-600';
-      case 'CANCELLED':
-        return 'text-red-600';
+      case "PENDING":
+        return "text-yellow-600";
+      case "PROCESSING":
+        return "text-blue-600";
+      case "SHIPPING":
+        return "text-purple-600";
+      case "COMPLETED":
+        return "text-green-600";
+      case "CANCELLED":
+        return "text-red-600";
       default:
-        return 'text-gray-600';
+        return "text-gray-600";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'PENDING':
-        return 'Chờ xử lý';
-      case 'PROCESSING':
-        return 'Đang xử lý';
-      case 'SHIPPING':
-        return 'Đang giao hàng';
-      case 'COMPLETED':
-        return 'Đã hoàn thành';
-      case 'CANCELLED':
-        return 'Đã hủy';
+      case "PENDING":
+        return "Chờ xử lý";
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "SHIPPING":
+        return "Đang giao hàng";
+      case "COMPLETED":
+        return "Đã hoàn thành";
+      case "CANCELLED":
+        return "Đã hủy";
       default:
         return status;
     }
@@ -104,10 +106,10 @@ export default function PurchaseHistoryPage() {
       if (order.expectedDeliveryTime) {
         return formatDate(new Date(order.expectedDeliveryTime));
       }
-      return 'Chưa có ngày giao hàng';
+      return "Chưa có ngày giao hàng";
     } catch (error) {
-      console.error('Error formatting date:', error);
-      return 'Ngày không hợp lệ';
+      console.error("Error formatting date:", error);
+      return "Ngày không hợp lệ";
     }
   };
 
@@ -117,33 +119,37 @@ export default function PurchaseHistoryPage() {
         paymentAmount: order.totalAmount,
         orderId: order.orderId,
       };
-      
+
       const response = await apiClient.post("/pay", paymentData);
       window.location.href = response.data.url;
     } catch (error) {
-      console.error('Error initiating payment:', error);
-      toast.error('Lỗi khi khởi tạo thanh toán');
+      console.error("Error initiating payment:", error);
+      toast.error("Lỗi khi khởi tạo thanh toán");
     }
   };
 
   const handleCancelOrder = async () => {
     if (!cancelOrderId) return;
-    
+
     setIsCancelling(true);
     try {
-      await apiClient.put(`/orders/status/${cancelOrderId}`, { orderStatus: "CANCELLED" });
-      
+      await apiClient.put(`/orders/status/${cancelOrderId}`, {
+        orderStatus: "CANCELLED",
+      });
+
       // Cập nhật danh sách đơn hàng
-      setOrders(orders.map(order => 
-        order.orderId === cancelOrderId 
-          ? { ...order, orderStatus: "CANCELLED" } 
-          : order
-      ));
-      
-      toast.success('Đơn hàng đã được hủy thành công');
+      setOrders(
+        orders.map((order) =>
+          order.orderId === cancelOrderId
+            ? { ...order, orderStatus: "CANCELLED" }
+            : order
+        )
+      );
+
+      toast.success("Đơn hàng đã được hủy thành công");
     } catch (error) {
-      console.error('Error cancelling order:', error);
-      toast.error('Không thể hủy đơn hàng');
+      console.error("Error cancelling order:", error);
+      toast.error("Không thể hủy đơn hàng");
     } finally {
       setIsCancelling(false);
       setCancelOrderId(null);
@@ -152,13 +158,18 @@ export default function PurchaseHistoryPage() {
 
   // Kiểm tra xem đơn hàng có thể hủy không
   const canCancelOrder = (order: OrderResponseDTO) => {
-    return order.orderStatus === 'PENDING' || order.orderStatus === 'PROCESSING';
+    return (
+      order.orderStatus === "PENDING" || order.orderStatus === "PROCESSING"
+    );
   };
 
   // Kiểm tra xem đơn hàng có thể thanh toán không
   const canPayOrder = (order: OrderResponseDTO) => {
-    return (order.orderStatus !== 'CANCELLED' && order.orderStatus !== 'COMPLETED') && 
-           (order.payment.paymentStatus !== 'COMPLETED');
+    return (
+      order.orderStatus !== "CANCELLED" &&
+      order.orderStatus !== "COMPLETED" &&
+      order.payment.paymentStatus !== "COMPLETED"
+    );
   };
 
   if (isLoading) {
@@ -183,14 +194,25 @@ export default function PurchaseHistoryPage() {
 
       {/* Bộ lọc trạng thái */}
       <div className="mb-6 flex flex-wrap gap-4">
-        {['All', 'PENDING', 'PROCESSING', 'SHIPPING', 'COMPLETED', 'CANCELLED'].map((status) => (
+        {[
+          "All",
+          "PENDING",
+          "PROCESSING",
+          "SHIPPING",
+          "COMPLETED",
+          "CANCELLED",
+        ].map((status) => (
           <Button
             key={status}
-            variant={filterStatus === (status === 'All' ? null : status) ? 'default' : 'outline'}
-            onClick={() => setFilterStatus(status === 'All' ? null : status)}
-            className={status !== 'All' ? getStatusColor(status) : ''}
+            variant={
+              filterStatus === (status === "All" ? null : status)
+                ? "default"
+                : "outline"
+            }
+            onClick={() => setFilterStatus(status === "All" ? null : status)}
+            className={status !== "All" ? getStatusColor(status) : ""}
           >
-            {status === 'All' ? 'Tất cả' : getStatusText(status)}
+            {status === "All" ? "Tất cả" : getStatusText(status)}
           </Button>
         ))}
       </div>
@@ -201,31 +223,39 @@ export default function PurchaseHistoryPage() {
       ) : (
         <div className="space-y-4">
           {filteredOrders.map((order) => (
-            <div key={order.orderId} className="border rounded-lg p-4 shadow-sm">
+            <div
+              key={order.orderId}
+              className="border rounded-lg p-4 shadow-sm"
+            >
               {/* Order Summary */}
               <div className="flex flex-wrap justify-between items-center gap-4">
-                <div>
+                <div className="w-5/12">
                   <p className="font-medium">Đơn hàng #{order.orderId}</p>
                   <p className="text-sm text-gray-500">
-                    Ngày giao dự kiến: {formatOrderDate(order)}
+                    Giao hàng: {formatOrderDate(order)}
                   </p>
                   <p className={`text-sm ${getStatusColor(order.orderStatus)}`}>
                     Trạng thái: {getStatusText(order.orderStatus)}
                   </p>
                   <p className="text-sm text-gray-500">
-                    Địa chỉ: {order.location.description}
+                    Địa chỉ: {order.orderAddress}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Số điện thoại: {order.orderPhoneNumber}
                   </p>
                 </div>
-                <div className="text-right">
+
+                <div className="w-2/12 text-right">
                   <p className="text-sm text-gray-500">Tổng tiền:</p>
                   <p className="text-lg font-bold text-teal-600">
                     {formatCurrency(order.totalAmount)}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2">
+
+                <div className="w-5/12 flex flex-col sm:flex-row gap-2">
                   {canPayOrder(order) && (
-                    <Button 
-                      variant="default" 
+                    <Button
+                      variant="default"
                       size="sm"
                       className="bg-green-600 hover:bg-green-700"
                       onClick={() => handlePayment(order)}
@@ -234,18 +264,19 @@ export default function PurchaseHistoryPage() {
                       Thanh toán
                     </Button>
                   )}
-                  
-                  {canCancelOrder(order) && order.payment.paymentStatus !== 'COMPLETED' && (
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => setCancelOrderId(order.orderId)}
-                    >
-                      <XCircle className="mr-2 h-4 w-4" />
-                      Hủy đơn
-                    </Button>
-                  )}
-                  
+
+                  {canCancelOrder(order) &&
+                    order.payment.paymentStatus !== "COMPLETED" && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setCancelOrderId(order.orderId)}
+                      >
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Hủy đơn
+                      </Button>
+                    )}
+
                   <Button
                     variant="outline"
                     size="sm"
@@ -267,31 +298,34 @@ export default function PurchaseHistoryPage() {
               {/* Order Details */}
               {expandedOrder === order.orderId && (
                 <div className="mt-4 space-y-2 border-t pt-4">
-                  {order.orderDetails && order.orderDetails.map((item: ExtendedOrderDetailDTO) => (
-                    <div
-                      key={item.productId}
-                      className="flex justify-between items-center"
-                    >
-                      <p>{item.productName}</p>
-                      <div className="flex items-center gap-4">
-                        <p>
-                          {formatCurrency(item.orderDetailPrice)} x {item.orderDetailQuantity}
-                        </p>
-                        <p className="font-bold">
-                          {formatCurrency(item.orderDetailPrice * item.orderDetailQuantity)}
-                        </p>
+                  {order.orderDetails &&
+                    order.orderDetails.map((item: ExtendedOrderDetailDTO) => (
+                      <div
+                        key={item.productId}
+                        className="flex justify-between items-center"
+                      >
+                        <p>{item.productName}</p>
+                        <div className="flex items-center gap-4">
+                          <p>
+                            {formatCurrency(item.orderDetailPrice)} x{" "}
+                            {item.orderDetailQuantity}
+                          </p>
+                          <p className="font-bold">
+                            {formatCurrency(
+                              item.orderDetailPrice * item.orderDetailQuantity
+                            )}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
 
                   {/* Tổng giá và ghi chú */}
                   <div className="border-t pt-4 mt-4 space-y-2">
-                 
-                      <div className="flex justify-between items-center text-gray-600">
-                        <span>Phí vận chuyển:</span>
-                        <span>{order.shippingFee || 0}  VNĐ</span>
-                      </div>
-                 
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>Phí vận chuyển:</span>
+                      <span>{order.shippingFee || 0} VNĐ</span>
+                    </div>
+
                     {order.orderNote && (
                       <div className="flex justify-between items-center text-gray-600">
                         <span>Ghi chú:</span>
@@ -299,9 +333,19 @@ export default function PurchaseHistoryPage() {
                       </div>
                     )}
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Trạng thái thanh toán:</span>
-                      <span className={order.payment.paymentStatus === 'COMPLETED' ? 'text-green-600' : 'text-yellow-600'}>
-                        {order.payment.paymentStatus === 'COMPLETED' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      <span className="text-gray-600">
+                        Trạng thái thanh toán:
+                      </span>
+                      <span
+                        className={
+                          order.payment.paymentStatus === "COMPLETED"
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }
+                      >
+                        {order.payment.paymentStatus === "COMPLETED"
+                          ? "Đã thanh toán"
+                          : "Chưa thanh toán"}
                       </span>
                     </div>
                     <div className="flex justify-between items-center font-bold">
@@ -310,6 +354,11 @@ export default function PurchaseHistoryPage() {
                         {formatCurrency(order.totalAmount)}
                       </span>
                     </div>
+                    {/* <div className="flex space-x-4 pt-4">
+                        <Link   href={`/orders/${order.orderId}`}   className="text-blue-600 hover:underline">
+                        chi tiết                         </Link>
+      
+                    </div> */}
                   </div>
                 </div>
               )}
@@ -319,22 +368,28 @@ export default function PurchaseHistoryPage() {
       )}
 
       {/* Hộp thoại xác nhận hủy đơn hàng */}
-      <AlertDialog open={!!cancelOrderId} onOpenChange={() => setCancelOrderId(null)}>
+      <AlertDialog
+        open={!!cancelOrderId}
+        onOpenChange={() => setCancelOrderId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận hủy đơn hàng</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể hoàn tác.
+              Bạn có chắc chắn muốn hủy đơn hàng này? Hành động này không thể
+              hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isCancelling}>Không, giữ lại</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleCancelOrder} 
+            <AlertDialogCancel disabled={isCancelling}>
+              Không, giữ lại
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelOrder}
               disabled={isCancelling}
               className="bg-red-600 hover:bg-red-700"
             >
-              {isCancelling ? 'Đang hủy...' : 'Có, hủy đơn hàng'}
+              {isCancelling ? "Đang hủy..." : "Có, hủy đơn hàng"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

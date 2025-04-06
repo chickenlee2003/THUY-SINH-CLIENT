@@ -11,6 +11,7 @@ import productService from "@/services/product.service";
 import reviewService from "@/services/review.service";
 import { use } from "react";
 import type { ReviewResponse } from "@/types/backend";
+import { RelatedProduct } from "@/components/related-product";
 
 interface ProductReview {
   reviewId: number;
@@ -28,6 +29,7 @@ interface Product {
   productSold: number;
   productStatus: "AVAILABLE" | "UNAVAILABLE";
   categoryId: number;
+  categoryName: string;
   images: Array<{
     imageId: number;
     imageUrl: string;
@@ -111,7 +113,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           href={`/products/category/${product.categoryId}`}
           className="hover:text-teal-600"
         >
-          Danh mục {product.categoryId} 
+          {product.categoryName} 
         </Link>
         <ChevronRight className="h-4 w-4" />
         <span>{product.productName}</span>
@@ -130,11 +132,18 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
+      {/* Related Products */}
+      <div className="mt-16">
+        <RelatedProduct categoryId={product.categoryId} />
+      </div>
+
       {/* Product Reviews */}
-      <ProductReviews
-        productId={product.productId}
-        reviews={apiReviews}
-      />
+      <div className="mt-16">
+        <ProductReviews
+          productId={product.productId}
+          reviews={apiReviews}
+        />
+      </div>
     </div>
   );
 }

@@ -51,7 +51,7 @@ export function Chatbot() {
         setMessages([
           {
             sender: "bot",
-            message: "Kolathur Fish Market xin chào! Chúng tôi có thể giúp gì cho bạn?"
+            message: "Xin chào! Chúng tôi có thể giúp gì cho bạn?"
           }
         ])
         setIsWelcomeSent(true)
@@ -179,7 +179,7 @@ export function Chatbot() {
         <div className="fixed bottom-6 right-6 z-50 w-[350px] sm:w-[400px] h-[500px] bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border">
           {/* Header */}
           <div className="bg-teal-600 text-white p-3 flex items-center justify-between">
-            <h3 className="font-bold text-sm">Hãy hỏi tôi bạn nhé</h3>
+            <h3 className="font-bold text-sm">Mi chat</h3>
             <Button
               variant="ghost"
               size="icon"

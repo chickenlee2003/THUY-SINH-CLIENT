@@ -48,7 +48,6 @@ export default function OrderDetailPage() {
       setIsLoading(true);
       setErrorMessage(null);
       try {
-        
         const orderData = await orderService.getOrderById(Number(orderId));
         setOrder(orderData);
       } catch (err) {
@@ -67,21 +66,27 @@ export default function OrderDetailPage() {
     if (vnp_ResponseCode) {
       if (vnp_ResponseCode === "00") {
         toast.success("Thanh toán thành công!");
-        
+
         // Update both order status and payment status
         const updateStatuses = async () => {
           try {
             console.log("Updating order and payment status...");
             // First update order status to PROCESSING
-            await apiClient.put(`/orders/status/${orderId}`, { orderStatus: "PROCESSING" });
+            await apiClient.put(`/orders/status/${orderId}`, {
+              orderStatus: "PROCESSING",
+            });
             console.log("Order status updated to PROCESSING");
-            
+
             // Then update payment status to COMPLETED
-            await apiClient.put(`/orders/payment/${orderId}`, { paymentStatus: "COMPLETED" });
+            await apiClient.put(`/orders/payment/${orderId}`, {
+              paymentStatus: "COMPLETED",
+            });
             console.log("Payment status updated to COMPLETED");
-            
+
             // Refresh order data
-            const updatedOrder = await orderService.getOrderById(Number(orderId));
+            const updatedOrder = await orderService.getOrderById(
+              Number(orderId)
+            );
             setOrder(updatedOrder);
             console.log("Order data refreshed:", updatedOrder);
           } catch (error) {
@@ -89,28 +94,32 @@ export default function OrderDetailPage() {
             toast.error("Có lỗi khi cập nhật trạng thái đơn hàng.");
           }
         };
-        
+
         updateStatuses();
       } else {
         toast.error("Thanh toán thất bại. Mã lỗi: " + vnp_ResponseCode);
-        
+
         // Update payment status to FAILED
         const updateFailedStatus = async () => {
           try {
-            await apiClient.put(`/api/v1/orders/payment-status/${orderId}`, { paymentStatus: "FAILED" });
-            
+            await apiClient.put(`/api/v1/orders/payment-status/${orderId}`, {
+              paymentStatus: "FAILED",
+            });
+
             // Refresh order data
-            const updatedOrder = await orderService.getOrderById(Number(orderId));
+            const updatedOrder = await orderService.getOrderById(
+              Number(orderId)
+            );
             setOrder(updatedOrder);
           } catch (error) {
             console.log("Error updating payment status:", error);
             toast.error("Có lỗi khi cập nhật trạng thái thanh toán.");
           }
         };
-        
+
         updateFailedStatus();
       }
-      
+
       // Xóa tham số callback khỏi URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
@@ -118,7 +127,11 @@ export default function OrderDetailPage() {
   }, [searchParams, orderId]);
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Đang tải thông tin đơn hàng...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Đang tải thông tin đơn hàng...
+      </div>
+    );
   }
 
   if (errorMessage) {
@@ -126,12 +139,18 @@ export default function OrderDetailPage() {
   }
 
   if (!order) {
-    return <div className="container mx-auto px-4 py-8">Không tìm thấy thông tin đơn hàng</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Không tìm thấy thông tin đơn hàng
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Chi tiết đơn hàng #{order.orderId}</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Chi tiết đơn hàng #{order.orderId}
+      </h1>
 
       <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
         <div className="space-y-6">
@@ -154,7 +173,7 @@ export default function OrderDetailPage() {
                   <span className="font-medium">{formatDate(new Date())}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Dự kiến giao hàng:</span>
+                  <span className="text-gray-600">Giao hàng:</span>
                   <span className="font-medium">
                     {order.expectedDeliveryTime
                       ? formatDate(new Date(order.expectedDeliveryTime))
@@ -173,7 +192,18 @@ export default function OrderDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>{order.location?.description}</p>
+              <p>{order?.orderAddress}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Số điện thoại
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{order?.orderPhoneNumber}</p>
             </CardContent>
           </Card>
 
@@ -184,12 +214,22 @@ export default function OrderDetailPage() {
             <CardContent>
               <ul className="divide-y">
                 {order.orderDetails?.map((item) => (
-                  <li key={item.productId} className="py-4 flex justify-between">
+                  <li
+                    key={item.productId}
+                    className="py-4 flex justify-between"
+                  >
                     <div>
-                      <p className="font-medium">{(item as ExtendedOrderDetailDTO).productName || `Sản phẩm #${item.productId}`}</p>
-                      <p className="text-sm text-gray-500">Số lượng: {item.orderDetailQuantity}</p>
+                      <p className="font-medium">
+                        {(item as ExtendedOrderDetailDTO).productName ||
+                          `Sản phẩm #${item.productId}`}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Số lượng: {item.orderDetailQuantity}
+                      </p>
                     </div>
-                    <p className="font-medium">{formatCurrency(item.orderDetailPrice)}</p>
+                    <p className="font-medium">
+                      {formatCurrency(item.orderDetailPrice)}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -219,12 +259,12 @@ export default function OrderDetailPage() {
                   <span>Tạm tính</span>
                   <span>{formatCurrency(order.totalAmount)}</span>
                 </div>
-               
-                  <div className="flex justify-between">
-                    <span>Phí vận chuyển</span>
-                    <span>{formatCurrency(order.shippingFee || 0 )}</span>
-                  </div>
-              
+
+                <div className="flex justify-between">
+                  <span>Phí vận chuyển</span>
+                  <span>{formatCurrency(order.shippingFee || 0)}</span>
+                </div>
+
                 {order.totalDiscount && (
                   <div className="flex justify-between">
                     <span>Giảm giá</span>
@@ -234,7 +274,9 @@ export default function OrderDetailPage() {
                 <Separator />
                 <div className="flex justify-between font-medium">
                   <span>Tổng cộng</span>
-                  <span className="text-lg">{formatCurrency(order.totalAmount)}</span>
+                  <span className="text-lg">
+                    {formatCurrency(order.totalAmount)}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -247,9 +289,11 @@ export default function OrderDetailPage() {
             <CardContent>
               {order.payment && (
                 <>
-                {/* mặc đinh là qua vnpay */}
+                  {/* mặc đinh là qua vnpay */}
                   <p className="font-medium">VNPAY</p>
-                  <p className="text-sm text-gray-500">Thanh toán trực tuyến qua VNPAY</p>
+                  <p className="text-sm text-gray-500">
+                    Thanh toán trực tuyến qua VNPAY
+                  </p>
                   {/* <p className="font-medium">
                     {order.payment.paymentMethodName || "Không có thông tin"}
                   </p> */}
@@ -279,7 +323,7 @@ export default function OrderDetailPage() {
               <Button className="w-full">
                 <Home className="mr-2 h-4 w-4" /> Về trang chủ
               </Button>
-            </Link> 
+            </Link>
             <Link href="/support-page">
               <Button variant="outline" className="w-full">
                 <LifeBuoy className="mr-2 h-4 w-4" /> Liên hệ hỗ trợ

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Heart } from "lucide-react";
+import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, formatCurrency } from "@/lib/utils";
 import { toast } from "react-toastify";
 import cartItemService from "@/services/cartItem.service";
+import { useRouter } from "next/navigation";
 
 // import { ProductImageGallery } from "./product-image-gallery";
 
@@ -42,9 +43,9 @@ export function ProductDetails({
   productSold,
   images,
 }: ProductDetailsProps) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const totalPrice = productPrice * quantity;
 
@@ -87,11 +88,45 @@ export function ProductDetails({
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     try {
-      toast.info("Tính năng đang được phát triển");
+      const userId = Number(localStorage.getItem("id"));
+      if (!userId) {
+        toast.error("Bạn cần đăng nhập để mua sản phẩm.");
+        return;
+      }
+
+      if (productStatus !== "AVAILABLE") {
+        toast.error("Sản phẩm hiện không có sẵn");
+        return;
+      }
+
+      if (productQuantity === 0) {
+        toast.error("Sản phẩm đã hết hàng");
+        return;
+      }
+
+      if (quantity > productQuantity) {
+        toast.error(`Chỉ còn ${productQuantity} sản phẩm có sẵn`);
+        return;
+      }
+
+      if (quantity === 0) {
+        toast.error("Vui lòng chọn số lượng sản phẩm");
+        return;
+      }
+
+      // Add item to cart first
+      setIsAddingToCart(true);
+      await cartItemService.addItemToCart(productId, quantity, userId);
+      
+      // Then redirect to checkout
+      router.push('/checkout');
     } catch (error) {
-      console.error("Toast error:", error);
+      console.error("Failed to process buy now:", error);
+      toast.error("Không thể thực hiện chức năng mua ngay. Vui lòng thử lại sau.");
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -235,9 +270,20 @@ export function ProductDetails({
               variant="secondary" 
               className="flex-1"
               onClick={handleBuyNow}
-              disabled={productQuantity === 0}
+              disabled={
+                isAddingToCart || 
+                productStatus !== "AVAILABLE" || 
+                quantity === 0 || 
+                productQuantity === 0 ||
+                quantity > productQuantity
+              }
             >
-              Mua ngay
+              {isAddingToCart 
+                ? "Đang xử lý..." 
+                : productQuantity === 0 
+                  ? "Hết hàng" 
+                  : "Mua ngay"
+              }
             </Button>
           </div>
         </div>

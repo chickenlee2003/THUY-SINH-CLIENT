@@ -1,10 +1,30 @@
+"use client"
+
 import { Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
+import shopService from "@/services/shop.service";
+import { IShop } from "@/types/backend";
 
 export default function ContactPage() {
+  const [shop, setShop] = useState<IShop | null>(null);
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   email: "",
+  //   phone: "",
+  //   message: ""
+  // });
+  useEffect(() => {
+    const fetchShop = async () => {
+      const response = await shopService.getShopById(1);
+      setShop(response);
+    };
+    fetchShop();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 text-center">
@@ -26,7 +46,7 @@ export default function ContactPage() {
                 href="mailto:support@kolathurfishmarket.com"
                 className="text-gray-600 hover:text-teal-600"
               >
-                tuankiet191103@gmail.com
+                {shop?.shopEmail}
               </a>
             </div>
             <div className="flex items-center gap-3">
@@ -35,13 +55,13 @@ export default function ContactPage() {
                 href="tel:+917338701314"
                 className="text-gray-600 hover:text-teal-600"
               >
-                034 930 1982
+                {shop?.shopPhoneNumber}
               </a>
             </div>
             <div className="flex gap-3">
               <MapPin className="h-5 w-5 text-teal-600 shrink-0 mt-1" />
               <address className="text-gray-600 not-italic">
-                180/8D đường 30/4, Hưng lợi, Ninh Kiều, Cần thơ
+                {shop?.address}
                 <br />
               </address>
             </div>

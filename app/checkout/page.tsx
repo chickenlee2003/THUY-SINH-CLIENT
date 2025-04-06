@@ -9,7 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AddressSelector } from "@/components/address-selector";
 import { CartSummary } from "@/components/cart-summary";
 import cartItemService from "@/services/cartItem.service";
@@ -78,7 +84,9 @@ export default function CheckoutPage() {
 
   const fetchDistricts = async (provinceCode: string) => {
     try {
-      const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
+      );
       const data = await response.json();
       setDistricts(data.districts);
     } catch (error) {
@@ -88,7 +96,9 @@ export default function CheckoutPage() {
 
   const fetchWards = async (districtCode: string) => {
     try {
-      const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+      const response = await fetch(
+        `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`
+      );
       const data = await response.json();
       setWards(data.wards);
     } catch (error) {
@@ -109,14 +119,16 @@ export default function CheckoutPage() {
         }
 
         const items = await cartItemService.getCartByUserId(Number(userId));
-        const formattedItems: CartItem[] = items.data.cartItems.map((item: any) => ({
-          productId: item.productDTO.productId,
-          productName: item.productDTO.productName,
-          price: item.productDTO.productPrice,
-          quantity: item.quantity,
-          image: item.productDTO.images[0]?.imageUrl || "/placeholder.svg",
-          stock: item.productDTO.productQuantity,
-        }));
+        const formattedItems: CartItem[] = items.data.cartItems.map(
+          (item: any) => ({
+            productId: item.productDTO.productId,
+            productName: item.productDTO.productName,
+            price: item.productDTO.productPrice,
+            quantity: item.quantity,
+            image: item.productDTO.images[0]?.imageUrl || "/placeholder.svg",
+            stock: item.productDTO.productQuantity,
+          })
+        );
         setCartItems(formattedItems);
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -128,8 +140,10 @@ export default function CheckoutPage() {
       try {
         const userId = localStorage.getItem("id");
         if (!userId) return;
-        
-        const fetchedLocations = await locationService.getLocationByUserId(Number(userId));
+
+        const fetchedLocations = await locationService.getLocationByUserId(
+          Number(userId)
+        );
         setLocations(fetchedLocations.data);
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -151,27 +165,40 @@ export default function CheckoutPage() {
       }
 
       // Get the names of the selected province, district, and ward
-      const provinceName = provinces.find(province => province.code.toString() === selectedProvince)?.name || '';
-      const districtName = districts.find(district => district.code.toString() === selectedDistrict)?.name || '';
-      const wardName = wards.find(ward => ward.code.toString() === selectedWard)?.name || '';
-      
+      const provinceName =
+        provinces.find(
+          (province) => province.code.toString() === selectedProvince
+        )?.name || "";
+      const districtName =
+        districts.find(
+          (district) => district.code.toString() === selectedDistrict
+        )?.name || "";
+      const wardName =
+        wards.find((ward) => ward.code.toString() === selectedWard)?.name || "";
+
       // Create the full address description
       const fullAddress = `${newAddress.description}, ${wardName}, ${districtName}, ${provinceName}`;
-  
+
       const addressToSubmit = {
         ...newAddress,
         description: fullAddress,
         userId: Number(userId),
       };
-  
+
       const response = await addressService.addAddress(addressToSubmit);
-      setLocations(prev => [...prev, response.data]);
+      setLocations((prev) => [...prev, response.data]);
       setShowAddAddress(false);
       setSelectedAddress(response.data.locationId);
       toast.success("Thêm địa chỉ thành công!");
 
       // Reset form
-      setNewAddress({ locationId: 0, latitude: 0, longitude: 0, description: "", userId: 0 });
+      setNewAddress({
+        locationId: 0,
+        latitude: 0,
+        longitude: 0,
+        description: "",
+        userId: 0,
+      });
       setSelectedProvince("");
       setSelectedDistrict("");
       setSelectedWard("");
@@ -196,17 +223,23 @@ export default function CheckoutPage() {
         return;
       }
 
-      const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const subtotal = cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
       const shippingFee = subtotal >= 1000000 ? 0 : 35000;
 
       const orderData = {
         locationId: selectedAddress,
         orderNote,
         voucherId: voucherCode,
-        shippingFee
+        shippingFee,
       };
 
-      const orderResponse = await orderService.createOrder(Number(userId), orderData);
+      const orderResponse = await orderService.createOrder(
+        Number(userId),
+        orderData
+      );
       toast.success("Đặt hàng thành công!");
       router.push(`/orders/${orderResponse.orderId}`);
     } catch (error) {
@@ -223,7 +256,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8">Thanh toán</h1>
+      <h1 className="text-2xl font-bold mb-8">Đơn hàng</h1>
 
       <div className="grid gap-8 md:grid-cols-[1fr_400px]">
         <div className="space-y-6">
@@ -231,7 +264,11 @@ export default function CheckoutPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Địa chỉ giao hàng</CardTitle>
-              <Button variant="outline" size="sm" onClick={() => setShowAddAddress(!showAddAddress)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddAddress(!showAddAddress)}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 {showAddAddress ? "Hủy" : "Thêm địa chỉ mới"}
               </Button>
@@ -244,7 +281,12 @@ export default function CheckoutPage() {
                     <Input
                       id="description"
                       value={newAddress.description}
-                      onChange={(e) => setNewAddress({ ...newAddress, description: e.target.value })}
+                      onChange={(e) =>
+                        setNewAddress({
+                          ...newAddress,
+                          description: e.target.value,
+                        })
+                      }
                       placeholder="Ví dụ: Nhà riêng, Công ty..."
                       className="mt-1"
                       required
@@ -263,7 +305,10 @@ export default function CheckoutPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {provinces.map((province) => (
-                          <SelectItem key={province.code} value={province.code.toString()}>
+                          <SelectItem
+                            key={province.code}
+                            value={province.code.toString()}
+                          >
                             {province.name}
                           </SelectItem>
                         ))}
@@ -283,7 +328,10 @@ export default function CheckoutPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {districts.map((district) => (
-                          <SelectItem key={district.code} value={district.code.toString()}>
+                          <SelectItem
+                            key={district.code}
+                            value={district.code.toString()}
+                          >
                             {district.name}
                           </SelectItem>
                         ))}
@@ -298,7 +346,10 @@ export default function CheckoutPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {wards.map((ward) => (
-                          <SelectItem key={ward.code} value={ward.code.toString()}>
+                          <SelectItem
+                            key={ward.code}
+                            value={ward.code.toString()}
+                          >
                             {ward.name}
                           </SelectItem>
                         ))}
@@ -338,10 +389,12 @@ export default function CheckoutPage() {
                     <div className="flex flex-1 flex-col justify-between">
                       <div>
                         <h3 className="font-medium">{item.productName}</h3>
-                        <p className="mt-1 text-sm text-gray-500">Số lượng: {item.quantity}</p>
+                        <p className="mt-1 text-sm text-gray-500">
+                          Số lượng: {item.quantity}
+                        </p>
                       </div>
                       <p className="text-sm font-medium text-gray-900">
-                        {new Intl.NumberFormat('vi-VN').format(item.price)} VNĐ
+                        {new Intl.NumberFormat("vi-VN").format(item.price)} VNĐ
                       </p>
                     </div>
                   </div>
@@ -368,17 +421,38 @@ export default function CheckoutPage() {
         {/* Order Summary */}
         <div className="space-y-6">
           <CartSummary
-            subtotal={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)}
-            shippingFee={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) >= 1000000 ? 0 : 35000}
-            total={cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) + (cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0) >= 1000000 ? 0 : 35000)}
+            subtotal={cartItems.reduce(
+              (sum, item) => sum + item.price * item.quantity,
+              0
+            )}
+            shippingFee={
+              cartItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              ) >= 1000000
+                ? 0
+                : 35000
+            }
+            total={
+              cartItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              ) +
+              (cartItems.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+              ) >= 1000000
+                ? 0
+                : 35000)
+            }
             voucherCode={voucherCode}
             onApplyVoucher={setVoucherCode}
           />
 
-          <Button 
-            className="w-full" 
-            size="lg" 
-            disabled={!selectedAddress || isSubmitting} 
+          <Button
+            className="w-full"
+            size="lg"
+            disabled={!selectedAddress || isSubmitting}
             onClick={handlePlaceOrder}
           >
             {isSubmitting ? "Đang xử lý..." : "Đặt hàng"}

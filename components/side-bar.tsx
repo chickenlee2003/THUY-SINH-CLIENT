@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Home, ShoppingBag,  Heart,   TicketCheck, User, Trash2, LogOut } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface SidebarProps {
   user: {
@@ -24,12 +25,17 @@ export default function Sidebar({ user, activePath }: SidebarProps) {
     { path: "/profile", label: "Quản lý hồ sơ", icon: User },
     // { path: "/delete-account", label: "Xóa tài khoản", icon: Trash2 },
   ]
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAvatar(localStorage.getItem("avatar"));
+  }, []);
 
   return (
     <div className="w-72 border-r bg-white p-4">
       <div className="flex flex-col items-center mb-8 pt-4">
         <Avatar className="h-24 w-24 mb-2">
-          <AvatarImage src={user.avatar || "/avatardf.png"} alt="Avatar" />
+          <AvatarImage src={avatar || "/avatardf.png"} alt="Avatar" />
           <AvatarFallback className="text-3xl">
             {user.name
               .split(" ")
