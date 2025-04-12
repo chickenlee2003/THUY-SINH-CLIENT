@@ -139,9 +139,11 @@ export default function ProfilePage() {
         updatedUser
       );
       localStorage.setItem("avatar", response.data.avatar);
-
+      window.location.reload(); // Reload the page to reflect changes
       console.log("Cập nhật thông tin thành công:", response.data);
       toast.success("Cập nhật thông tin thành công!"); // Show success message
+      // Show success message
+      // Optionally, you can redirect or perform other actions here
     } catch (error) {
       console.error("Cập nhật thông tin thất bại:", error);
       toast.error("Cập nhật thông tin thất bại."); // Show error message

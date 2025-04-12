@@ -40,6 +40,17 @@ export default function RegisterPage() {
       toast.error("Họ và tên phải có ít nhất 3 ký tự.");
       return;
     }
+    // password must be at least 6 characters
+    if (password.length < 6) {
+      toast.error("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+    // phone number must be 10 digits
+    const phonePattern = /^\d{10}$/;
+    if (phoneNumber && !phonePattern.test(phoneNumber)) {
+      toast.error("Số điện thoại không hợp lệ.");
+      return;
+    }
 
     try {
       const newUser = {
@@ -59,7 +70,7 @@ export default function RegisterPage() {
         toast.error("Đăng ký không thành công. Vui lòng thử lại.");
       }
     } catch (error) {
-      toast.error( error);
+      toast.error(error);
     }
   };
 
@@ -68,7 +79,7 @@ export default function RegisterPage() {
       {/* Phía trái - Hình ảnh */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img
-         src="/reg.jpg"
+          src="/reg.jpg"
           alt="Aquarium"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -127,6 +138,23 @@ export default function RegisterPage() {
                   placeholder="kietlt@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Số điện thoại
+                </label>
+                <Input
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                   required
                   className="mt-1"
                 />

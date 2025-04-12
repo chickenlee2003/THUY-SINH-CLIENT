@@ -203,7 +203,7 @@ export default function CheckoutPage() {
       setSelectedDistrict("");
       setSelectedWard("");
     } catch (error) {
-      console.error("Error adding address:", error);
+      console.log("Error adding address:", error);
       toast.error("Không thể thêm địa chỉ");
     }
   };
@@ -243,7 +243,7 @@ export default function CheckoutPage() {
       toast.success("Đặt hàng thành công!");
       router.push(`/orders/${orderResponse.orderId}`);
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.log("Error creating order:", error);
       toast.error("Đặt hàng thất bại. Vui lòng thử lại sau.");
     } finally {
       setIsSubmitting(false);

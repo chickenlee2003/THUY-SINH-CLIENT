@@ -1,37 +1,46 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Star, User, ChevronLeft, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toast } from "react-toastify"
-import { formatDate } from "@/lib/utils"
-import { useAuth } from "@/hooks/use-auth"
-import reviewService from "@/services/review.service"
-import type { ReviewResponse, ReviewSubmitData } from "@/types/backend"
+import { useState, useEffect } from "react";
+import { Star, User, ChevronLeft, ChevronRight, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "react-toastify";
+import { formatDate } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import reviewService from "@/services/review.service";
+import type { ReviewResponse, ReviewSubmitData } from "@/types/backend";
 
 interface ProductReviewSectionProps {
   productId: number;
   initialReviews?: ReviewResponse[];
 }
 
-export function ProductReviewSection({ productId, initialReviews = [] }: ProductReviewSectionProps) {
+export function ProductReviewSection({
+  productId,
+  initialReviews = [],
+}: ProductReviewSectionProps) {
   const [reviews, setReviews] = useState<ReviewResponse[]>(initialReviews);
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { isAuthenticated } = useAuth();
-  
+  const { isAuthenticated, user } = useAuth();
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyContent, setReplyContent] = useState("");
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 8;
 
+  // Check if user is admin
+  const isAdmin = localStorage.getItem("role") === "ROLE_ADMIN";
+
   // Calculate average rating
-  const averageRating = reviews.length 
-    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+  const averageRating = reviews.length
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0;
 
   // Get current reviews for pagination
@@ -91,19 +100,19 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
 
     try {
       const userId = Number(localStorage.getItem("id"));
-      
+
       const reviewData: ReviewSubmitData = {
         userId,
         productId,
         rating: userRating,
-        comment
+        comment,
       };
 
       const newReview = await reviewService.createReview(reviewData);
-      
+
       // Add the new review to the list
       setReviews([newReview, ...reviews]);
-      
+
       // Reset to page 1 to show the new review
       setCurrentPage(1);
 
@@ -113,16 +122,60 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
 
       toast.success("Cảm ơn bạn đã đánh giá sản phẩm!");
     } catch {
-      toast.error("Không thể gửi đánh giá. Chỉ những người đã mua sản phẩm mới có thể đánh giá.");
+      toast.error(
+        "Không thể gửi đánh giá. Chỉ những người đã mua sản phẩm mới có thể đánh giá."
+      );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Handle admin reply submission
+  const handleSubmitReply = async (reviewId: number) => {
+    if (!isAdmin) {
+      toast.error("Chỉ quản trị viên mới có thể trả lời đánh giá");
+      return;
+    }
+
+    if (replyContent.trim() === "") {
+      toast.error("Vui lòng nhập nội dung phản hồi");
+      return;
+    }
+
+    setIsSubmittingReply(true);
+
+    try {
+      const updatedReview = await reviewService.replyToReview(
+        reviewId,
+        replyContent
+      );
+
+      // Update the review with the new reply in the state
+      setReviews(
+        reviews.map((review) =>
+          review.id === reviewId
+            ? { ...review, reply: updatedReview.reply }
+            : review
+        )
+      );
+
+      // Reset reply state
+      setReplyingTo(null);
+      setReplyContent("");
+
+      toast.success("Phản hồi đã được gửi thành công!");
+    } catch (error) {
+      console.error("Error submitting reply:", error);
+      toast.error("Không thể gửi phản hồi. Vui lòng thử lại sau.");
+    } finally {
+      setIsSubmittingReply(false);
     }
   };
 
   // Format review count display
   const formatReviewCount = (count: number): string => {
     if (count === 0) return "Chưa có đánh giá";
-    return `${count} ${count === 1 ? 'đánh giá' : 'đánh giá'}`;
+    return `${count} ${count === 1 ? "đánh giá" : "đánh giá"}`;
   };
 
   // Render pagination controls
@@ -131,15 +184,15 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
 
     return (
       <div className="flex justify-center items-center gap-2 mt-8">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="icon"
           onClick={() => paginate(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        
+
         <div className="flex gap-1">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
             <Button
@@ -153,9 +206,9 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
             </Button>
           ))}
         </div>
-        
-        <Button 
-          variant="outline" 
+
+        <Button
+          variant="outline"
           size="icon"
           onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
@@ -181,20 +234,26 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
       {/* Rating summary */}
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="bg-gray-50 p-6 rounded-lg text-center md:w-64">
-          <div className="text-5xl font-bold text-teal-600 mb-2">{averageRating.toFixed(1)}</div>
+          <div className="text-5xl font-bold text-teal-600 mb-2">
+            {averageRating.toFixed(1)}
+          </div>
           <div className="flex justify-center mb-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
                 className={`h-5 w-5 ${
-                  star <= Math.round(averageRating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                  star <= Math.round(averageRating)
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-300"
                 }`}
               />
             ))}
           </div>
           <div className="text-sm text-gray-500 flex justify-center items-center gap-1">
             <div className="flex items-center">
-              <span className="font-medium">{formatReviewCount(reviews.length)}</span>
+              <span className="font-medium">
+                {formatReviewCount(reviews.length)}
+              </span>
             </div>
           </div>
         </div>
@@ -205,7 +264,9 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
             <h3 className="text-lg font-medium mb-4">Viết đánh giá của bạn</h3>
             <form onSubmit={handleSubmitReview} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Đánh giá của bạn</label>
+                <label className="block text-sm font-medium mb-2">
+                  Đánh giá của bạn
+                </label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -218,7 +279,9 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
                     >
                       <Star
                         className={`h-8 w-8 ${
-                          star <= (hoverRating || userRating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                          star <= (hoverRating || userRating)
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300"
                         }`}
                       />
                     </button>
@@ -227,7 +290,10 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
               </div>
 
               <div>
-                <label htmlFor="comment" className="block text-sm font-medium mb-2">
+                <label
+                  htmlFor="comment"
+                  className="block text-sm font-medium mb-2"
+                >
                   Nhận xét của bạn
                 </label>
                 <Textarea
@@ -247,7 +313,9 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
         ) : (
           <div className="flex-1 bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-medium mb-4">Viết đánh giá của bạn</h3>
-            <p className="text-gray-500 mb-4">Bạn cần đăng nhập để đánh giá sản phẩm này</p>
+            <p className="text-gray-500 mb-4">
+              Bạn cần đăng nhập để đánh giá sản phẩm này
+            </p>
             <Button asChild>
               <a href="/login">Đăng nhập</a>
             </Button>
@@ -277,8 +345,12 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
           </div>
         ) : reviews.length === 0 ? (
           <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">Chưa có đánh giá nào cho sản phẩm này</p>
-            <p className="text-sm mt-2">Hãy là người đầu tiên đánh giá sản phẩm!</p>
+            <p className="text-gray-500">
+              Chưa có đánh giá nào cho sản phẩm này
+            </p>
+            <p className="text-sm mt-2">
+              Hãy là người đầu tiên đánh giá sản phẩm!
+            </p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -287,7 +359,10 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
                 <div className="flex items-start gap-4">
                   <Avatar className="h-10 w-10">
                     {review?.user?.avatar ? (
-                      <AvatarImage src={review.user.avatar} alt={review.user.name || 'User'} />
+                      <AvatarImage
+                        src={review.user.avatar}
+                        alt={review.user.name || "User"}
+                      />
                     ) : (
                       <AvatarFallback>
                         <User className="h-5 w-5" />
@@ -297,9 +372,13 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
 
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h4 className="font-medium">{review?.user?.name || 'Anonymous User'}</h4>
+                      <h4 className="font-medium">
+                        {review?.user?.name || "Anonymous User"}
+                      </h4>
                       <span className="text-sm text-gray-500">
-                        {review.createdAt ? formatDate(new Date(review.createdAt)) : ""}
+                        {review.createdAt
+                          ? formatDate(new Date(review.createdAt))
+                          : ""}
                       </span>
                     </div>
 
@@ -308,30 +387,82 @@ export function ProductReviewSection({ productId, initialReviews = [] }: Product
                         <Star
                           key={star}
                           className={`h-4 w-4 ${
-                            star <= review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                            star <= review.rating
+                              ? "text-yellow-400 fill-yellow-400"
+                              : "text-gray-300"
                           }`}
                         />
                       ))}
                     </div>
 
                     <p className="mt-2 text-gray-700">{review.comment}</p>
-                    
-                    {review.adminReply && (
+
+                    {review.reply && (
                       <div className="mt-4 pl-4 border-l-2 border-teal-500">
-                        <p className="text-sm font-medium">Phản hồi từ cửa hàng:</p>
-                        <p className="mt-1 text-gray-700">{review.adminReply}</p>
+                        <p className="text-sm font-medium">
+                          Phản hồi từ cửa hàng:
+                        </p>
+                        <p className="mt-1 text-gray-700">{review.reply}</p>
+                      </div>
+                    )}
+
+                    {/* Admin Reply Form */}
+                    {isAdmin && !review.reply && (
+                      <div className="mt-4">
+                        {replyingTo === review.id ? (
+                          <div className="space-y-2">
+                            <Textarea
+                              placeholder="Nhập phản hồi của bạn..."
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              className="text-sm"
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setReplyingTo(null);
+                                  setReplyContent("");
+                                }}
+                              >
+                                Hủy
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handleSubmitReply(review.id)}
+                                disabled={isSubmittingReply}
+                                className="bg-teal-600 hover:bg-teal-700"
+                              >
+                                {isSubmittingReply
+                                  ? "Đang gửi..."
+                                  : "Gửi phản hồi"}
+                                <Send className="h-4 w-4 ml-1" />
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setReplyingTo(review.id)}
+                            className="text-teal-600 hover:bg-teal-50"
+                          >
+                            Phản hồi
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {/* Pagination */}
             {renderPaginationControls()}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

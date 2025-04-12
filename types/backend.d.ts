@@ -13,9 +13,7 @@ interface ILoginResponse {
   id: number;
   token: string;
   role: string;
-  
 }
-
 
 export interface IResponse {
   status: number;
@@ -119,10 +117,9 @@ export interface IAddress {
   latitude: number;
   longitude: number;
   description: string;
-  userId: number; 
+  userId: number;
   locationId?: number;
 }
-
 
 export interface ICart {
   productId: number;
@@ -141,12 +138,10 @@ export interface IOrderWithUser extends IOrder {
   user: IUser;
 }
 
-
 export interface OrderCreateRequestDto {
   orderNote?: string; // Optional note for the order
   locationId: number; // ID of the location for delivery
   voucherId?: string; // Optional voucher code
-
 }
 
 export interface OrderResponseDTO {
@@ -173,8 +168,7 @@ export interface OrderDetailDTO {
   orderDetailQuantity: number;
   orderDetailAmount: number;
   // Add other fields as necessary
-} 
-
+}
 
 export interface ReviewSubmitData {
   userId: number;
@@ -191,7 +185,7 @@ export interface ReviewResponse {
   rating: number;
   comment: string;
   createdAt?: string;
-  adminReply?: string;
+  reply?: string;
   user?: {
     name?: string;
     fullName?: string;

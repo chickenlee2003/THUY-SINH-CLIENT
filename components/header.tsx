@@ -12,7 +12,8 @@ import {
   LogOut,
   SquareUserRound,
   Camera,
-  X
+  X,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,6 +48,7 @@ export function Header() {
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setAvatar(localStorage.getItem("avatar"));
@@ -56,7 +58,7 @@ export function Header() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    
+
     if (query.trim().length === 0) {
       setSearchResults([]);
       setShowResults(false);
@@ -78,7 +80,10 @@ export function Header() {
   // Handle click outside search results to close them
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowResults(false);
       }
     }
@@ -92,7 +97,7 @@ export function Header() {
   // Search products using the API
   const searchProducts = async (query: string) => {
     if (!query.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const response = await productService.searchProducts(query);
@@ -129,6 +134,29 @@ export function Header() {
     setShowRecognitionModal(true);
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        setCapturedImage(event.target.result as string);
+        setShowRecognitionModal(true);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    // Clear the input so the same file can be uploaded again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleCloseRecognitionModal = () => {
     setShowRecognitionModal(false);
     setCapturedImage(null);
@@ -147,15 +175,14 @@ export function Header() {
           <div className="flex items-center justify-between gap-8">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <img
-                src="/logo.jpg"
-                alt="Cửa hàng thuỷ sinh"
-                className="h-12"
-              />
+              <img src="/logo.jpg" alt="Cửa hàng thuỷ sinh" className="h-12" />
             </Link>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-2xl flex items-center gap-2" ref={searchRef}>
+            <div
+              className="flex-1 max-w-2xl flex items-center gap-2"
+              ref={searchRef}
+            >
               <div className="relative flex-1">
                 <form onSubmit={handleSearchSubmit}>
                   <div className="relative">
@@ -165,7 +192,11 @@ export function Header() {
                       className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600"
                       value={searchQuery}
                       onChange={handleSearchChange}
-                      onFocus={() => searchQuery.trim() && searchResults.length > 0 && setShowResults(true)}
+                      onFocus={() =>
+                        searchQuery.trim() &&
+                        searchResults.length > 0 &&
+                        setShowResults(true)
+                      }
                     />
                     {/* {searchQuery && (
                       <button 
@@ -176,7 +207,10 @@ export function Header() {
                         <X className="h-4 w-4" />
                       </button>
                     )} */}
-                    <button type="submit" className="mr-7  absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    <button
+                      type="submit"
+                      className="mr-7  absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
                       <Search className="h-5 w-5" />
                     </button>
                   </div>
@@ -186,35 +220,49 @@ export function Header() {
                 {showResults && searchResults.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 max-h-80 overflow-y-auto">
                     <div className="p-3 border-b">
-                      <span className="text-sm text-gray-500">Kết quả tìm kiếm cho &quot;{searchQuery}&quot;</span>
+                      <span className="text-sm text-gray-500">
+                        Kết quả tìm kiếm cho &quot;{searchQuery}&quot;
+                      </span>
                     </div>
                     <ul>
                       {searchResults.map((product) => (
-                        <li key={product.productId} className="border-b last:border-0">
-                          <button 
+                        <li
+                          key={product.productId}
+                          className="border-b last:border-0"
+                        >
+                          <button
                             className="flex items-center gap-3 p-3 w-full text-left hover:bg-gray-50 transition-colors"
-                            onClick={() => handleProductClick(product.productId)}
+                            onClick={() =>
+                              handleProductClick(product.productId)
+                            }
                           >
                             <div className="w-12 h-12 rounded bg-gray-200 overflow-hidden flex-shrink-0">
                               {product.images && product.images.length > 0 && (
-                                <img 
-                                  src={product.images[0].imageUrl} 
-                                  alt={product.productName} 
+                                <img
+                                  src={product.images[0].imageUrl}
+                                  alt={product.productName}
                                   className="w-full h-full object-cover"
                                 />
                               )}
                             </div>
                             <div className="flex-1">
-                              <h4 className="text-sm font-medium line-clamp-1">{product.productName}</h4>
-                              <p className="text-sm text-teal-600">{product.productPrice.toLocaleString('vi-VN')} VNĐ</p>
+                              <h4 className="text-sm font-medium line-clamp-1">
+                                {product.productName}
+                              </h4>
+                              <p className="text-sm text-teal-600">
+                                {product.productPrice.toLocaleString("vi-VN")}{" "}
+                                VNĐ
+                              </p>
                             </div>
                           </button>
                         </li>
                       ))}
                     </ul>
                     <div className="p-3 border-t bg-gray-50">
-                      <Link 
-                        href={`/search?keyword=${encodeURIComponent(searchQuery)}`}
+                      <Link
+                        href={`/search?keyword=${encodeURIComponent(
+                          searchQuery
+                        )}`}
                         className="text-sm text-teal-600 hover:text-teal-700 block text-center"
                         onClick={() => setShowResults(false)}
                       >
@@ -225,11 +273,16 @@ export function Header() {
                 )}
 
                 {/* No Results Message */}
-                {showResults && searchQuery.trim() && searchResults.length === 0 && !isLoading && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 p-4 text-center">
-                    <p className="text-gray-500">Không tìm thấy sản phẩm nào phù hợp</p>
-                  </div>
-                )}
+                {showResults &&
+                  searchQuery.trim() &&
+                  searchResults.length === 0 &&
+                  !isLoading && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 p-4 text-center">
+                      <p className="text-gray-500">
+                        Không tìm thấy sản phẩm nào phù hợp
+                      </p>
+                    </div>
+                  )}
 
                 {/* Loading State */}
                 {isLoading && (
@@ -238,15 +291,37 @@ export function Header() {
                   </div>
                 )}
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-10 w-10 rounded-full flex-shrink-0 border-teal-600 text-teal-600 hover:bg-teal-50"
-                onClick={() => setShowCamera(true)}
-                title="Nhận diện cá bằng hình ảnh"
-              >
-                <Camera className="h-5 w-5" />
-              </Button>
+
+              {/* Camera and Upload buttons */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 rounded-full flex-shrink-0 border-teal-600 text-teal-600 hover:bg-teal-50"
+                  onClick={() => setShowCamera(true)}
+                  title="Nhận diện cá bằng camera"
+                >
+                  <Camera className="h-5 w-5" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 rounded-full flex-shrink-0 border-teal-600 text-teal-600 hover:bg-teal-50"
+                  onClick={triggerFileInput}
+                  title="Tải lên hình ảnh để nhận diện cá"
+                >
+                  <Upload className="h-5 w-5" />
+                </Button>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </div>
             </div>
 
             {/* User, Wishlist, and Cart */}
@@ -266,12 +341,10 @@ export function Header() {
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Avatar>
                         <AvatarImage
-                          src={avatar || "/avatardf.png"} 
+                          src={avatar || "/avatardf.png"}
                           alt="User Avatar"
                         />
-                        <AvatarFallback>
-                          U
-                        </AvatarFallback>
+                        <AvatarFallback>U</AvatarFallback>
                       </Avatar>
                       <div className="hidden md:block">
                         <p className="text-sm font-medium">Người dùng</p>
@@ -279,7 +352,7 @@ export function Header() {
                     </div>
                     <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
                       <div className="bg-white rounded-lg shadow-lg border w-56 py-2">
-                          <Link
+                        <Link
                           href="/profile"
                           className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
                         >
@@ -371,14 +444,14 @@ export function Header() {
                 </Link>
               </li>
               <li>
-              <Link href="/products/category-parent/2">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-white hover:bg-teal-700"
-                >
-                  Phụ kiện
-                </Button>
-               </Link> 
+                <Link href="/products/category-parent/2">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-white hover:bg-teal-700"
+                  >
+                    Phụ kiện thuỷ sinh
+                  </Button>
+                </Link>
               </li>
             </ul>
           </div>

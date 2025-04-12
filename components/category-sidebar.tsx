@@ -8,6 +8,7 @@ import {
   Package,
   Container,
   Droplets,
+  Sprout,
   FishIcon as MonsterFish,
   ShellIcon as ShrimpIcon,
 } from "lucide-react";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 const categories = [
   { id: "category-parent/4", icon: Cookie, label: "Thức ăn" },
-  { id: "/category-parent/2", icon: Package, label: "Phụ kiện" },
+  { id: "/category/17", icon: Sprout, label: "Cây thuỷ sinh" },
   { id: "/category/4", icon: Container, label: "Hồ cá" },
   { id: "/category-parent/1", icon: Droplets, label: "Cá nước ngọt" },
   { id: "/category-parent/5", icon: MonsterFish, label: "Cá săn mồi" },
@@ -38,18 +39,17 @@ export function CategorySidebar({
   const searchParams = useSearchParams();
 
   const handleCategoryClick = (categoryId: string) => {
-  
     const params = new URLSearchParams(searchParams);
     params.set("category", categoryId);
     const categoryUrl = categoryId;
-    
+
     // Extract category ID if numeric value is present in the categoryId string
     if (onCategorySelect) {
       const match = categoryId.match(/\/category(?:-parent)?\/(\d+)/);
       const numericId = match ? parseInt(match[1]) : null;
       onCategorySelect(numericId);
     }
-    
+
     router.push(`/products/${categoryUrl}`);
   };
 

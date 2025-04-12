@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, Phone, MapPin, MessageSquare, HelpCircle, Truck, Clock, RefreshCw } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  MessageSquare,
+  HelpCircle,
+  Truck,
+  Clock,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import shopService from "@/services/shop.service";
-import { IShop } from "@/types/backend";  
+import { IShop } from "@/types/backend";
 
 export default function SupportPage() {
   const [shop, setShop] = useState<IShop | null>(null);
@@ -14,7 +23,7 @@ export default function SupportPage() {
     name: "",
     email: "",
     phone: "",
-    message: ""
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -30,39 +39,42 @@ export default function SupportPage() {
     fetchShop();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
-    
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Form submitted:", formData);
-      
+
       // Show success message
       setSubmitStatus({
         type: "success",
-        message: "Gửi tin nhắn thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất."
+        message:
+          "Gửi tin nhắn thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
       });
-      
+
       // Reset form
       setFormData({
         name: "",
         email: "",
         phone: "",
-        message: ""
+        message: "",
       });
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitStatus({
         type: "error",
-        message: "Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau."
+        message: "Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.",
       });
     } finally {
       setIsSubmitting(false);
@@ -72,7 +84,10 @@ export default function SupportPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-2">Hỗ trợ khách hàng</h1>
-      <p className="text-gray-500 mb-8">Chúng tôi luôn sẵn sàng hỗ trợ bạn với mọi thắc mắc về sản phẩm và dịch vụ</p>
+      <p className="text-gray-500 mb-8">
+        Chúng tôi luôn sẵn sàng hỗ trợ bạn với mọi thắc mắc về sản phẩm và dịch
+        vụ
+      </p>
       {/* md:grid-cols-2 */}
       <div className="grid gap-8 ">
         <div className="space-y-6">
@@ -88,33 +103,41 @@ export default function SupportPage() {
                 <Mail className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Email</p>
-                  <a href="mailto:spsuperprosp@gmail.com" className="text-teal-600 hover:underline">
+                  <a
+                    href="mailto:spsuperprosp@gmail.com"
+                    className="text-teal-600 hover:underline"
+                  >
                     {shop?.shopEmail}
                   </a>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Hotline</p>
-                  <a href="tel:1900123456" className="text-teal-600 hover:underline">
+                  <a
+                    href="tel:1900123456"
+                    className="text-teal-600 hover:underline"
+                  >
                     {shop?.shopPhoneNumber}
                   </a>
-                  <p className="text-sm text-gray-500">Hỗ trợ: {shop?.workingTime}</p>
+                  <p className="text-sm text-gray-500">
+                    Hỗ trợ: {shop?.workingTime}
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-teal-500" />
                 <div>
                   <p className="font-medium">Địa chỉ</p>
-                    <p>{shop?.address}</p>
+                  <p>{shop?.address}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -129,29 +152,32 @@ export default function SupportPage() {
                   Chính sách giao hàng
                 </h3>
                 <p className="text-gray-600 mt-1">
-                   Chúng tôi vận chuyển cá toàn quốc với phí 35.000đ cho các đơn hàng dưới 1 triệu đồng. Cá được đóng gói cẩn thận với túi bom oxy đảm bảo an toàn. Thời gian giao hàng từ 1-3 ngày tùy khu vực.
+                  Chúng tôi vận chuyển cá toàn quốc với phí 35.000đ cho các đơn
+                  hàng dưới 1 triệu đồng. Cá được đóng gói cẩn thận với túi bom
+                  oxy đảm bảo an toàn. Thời gian giao hàng từ 1-3 ngày tùy khu
+                  vực.
                 </p>
               </div>
-              
+
               <Separator />
 
-              
               <Separator />
-              
+
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <RefreshCw className="h-4 w-4 text-teal-500" />
                   Chính sách đổi trả
                 </h3>
                 <p className="text-gray-600 mt-1">
-                  Chúng tôi hỗ trợ đổi trả trong vòng 2 giờ sau khi nhận hàng nếu sản phẩm 
-                  không đảm bảo chất lượng hoặc không đúng với mô tả.
+                  Chúng tôi không hỗ trợ đổi trả trong. Sau khi nhận hàng nếu
+                  sản phẩm không đảm bảo chất lượng hoặc không đúng với mô tả
+                  vui lòng nhắn tin cho cửa hàng để được hỗ trợ.
                 </p>
               </div>
             </CardContent>
           </Card>
         </div>
-        
+
         {/* <div>
           <Card>
             <CardHeader>

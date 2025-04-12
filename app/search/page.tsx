@@ -38,9 +38,8 @@ export default function SearchPage() {
       try {
         if (keyword) {
           const response = await productService.searchProducts(keyword);
+          console.log(keyword, "Search response:", response);
           setProducts(response.data || []);
-        } else {
-          setProducts([]);
         }
         setError(null);
       } catch (err) {
@@ -56,7 +55,10 @@ export default function SearchPage() {
 
   const breadcrumbItems = [
     { label: "Trang chủ", href: "/" },
-    { label: `Tìm kiếm: "${keyword}"`, href: `/search?keyword=${encodeURIComponent(keyword)}` },
+    {
+      label: `Tìm kiếm: "${keyword}"`,
+      href: `/search?keyword=${encodeURIComponent(keyword)}`,
+    },
   ];
 
   return (
@@ -88,7 +90,8 @@ export default function SearchPage() {
         <div className="bg-gray-100 p-8 rounded-lg text-center">
           <h3 className="text-lg font-medium mb-2">Không tìm thấy sản phẩm</h3>
           <p className="text-gray-600 mb-6">
-            Rất tiếc, chúng tôi không tìm thấy sản phẩm nào khớp với từ khóa &quot;{keyword}&quot;
+            Rất tiếc, chúng tôi không tìm thấy sản phẩm nào khớp với từ khóa
+            &quot;{keyword}&quot;
           </p>
           <div className="space-y-4">
             <p className="font-medium">Bạn có thể thử:</p>
@@ -124,4 +127,4 @@ export default function SearchPage() {
       )}
     </div>
   );
-} 
+}
