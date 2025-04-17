@@ -4,6 +4,9 @@ const productService = {
   getAllProducts: async () => {
     return await apiClient.get("/products");
   },
+  getNewProducts: async () => {
+    return await apiClient.get("/products/new");
+  },
   getProductById: async (id: number) => {
     return await apiClient.get(`/products/${id}`);
   },
@@ -22,12 +25,11 @@ const productService = {
   searchProducts: async (productName: string) => {
     return await apiClient.get(`/products/search?productName=${productName}`);
   },
-  // getPaginatedProducts: async (page: number, size: number) => {
-  //   return await apiClient.get(`/products/paginated?page=${page}&size=${size}`);
-  // },
-  // getPaginatedProductsByCategory: async (categoryId: number, page: number, size: number) => {
-  //   return await apiClient.get(`/products/category/${categoryId}/paginated?page=${page}&size=${size}`);
-  // },
+  exportExcel: async () => {
+    return await apiClient.get("/products/export/excel", {
+      responseType: "blob", // Ensures the response is treated as a binary file
+    });
+  },
 };
 
 export default productService;

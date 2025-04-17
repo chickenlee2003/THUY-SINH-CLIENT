@@ -49,7 +49,8 @@ export function FishRecognitionModal({
         const result = await fishRecognitionService.recognizeFish(imageData);
 
         if (result.prediction) {
-          setResult(result.prediction);
+          // Store the normalized result (converting to NFC form)
+          setResult(result.prediction.normalize("NFC"));
         } else if (result.error) {
           setError(result.error);
         } else {
@@ -68,7 +69,11 @@ export function FishRecognitionModal({
 
   const handleFindSimilarProducts = () => {
     if (result) {
-      router.push(`/search?keyword=${encodeURIComponent(result)}`);
+      // Make sure the search term is properly normalized before encoding
+      const normalizedSearchTerm = result.normalize("NFC");
+      router.push(
+        `/search?keyword=${encodeURIComponent(normalizedSearchTerm)}`
+      );
       onClose();
     }
   };

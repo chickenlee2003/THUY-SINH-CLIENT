@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,19 +24,21 @@ export function FeaturedProducts() {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const response = await productService.getAllProducts();
+        const response = await productService.getNewProducts();
         // Ensure productStatus is one of the allowed values
-        const formattedProducts = response.data.map((product: {
-          productId: number;
-          productName: string;
-          productPrice: number;
-          images: Array<{ imageId: number; imageUrl: string }>;
-          productQuantity: number;
-          productStatus: string;
-        }) => ({
-          ...product,
-          productStatus: mapProductStatus(product.productStatus)
-        }));
+        const formattedProducts = response.data.map(
+          (product: {
+            productId: number;
+            productName: string;
+            productPrice: number;
+            images: Array<{ imageId: number; imageUrl: string }>;
+            productQuantity: number;
+            productStatus: string;
+          }) => ({
+            ...product,
+            productStatus: mapProductStatus(product.productStatus),
+          })
+        );
         setProducts(formattedProducts);
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -49,7 +51,9 @@ export function FeaturedProducts() {
   }, []);
 
   // Helper function to map string status to enum values
-  const mapProductStatus = (status: string): "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED" => {
+  const mapProductStatus = (
+    status: string
+  ): "AVAILABLE" | "OUT_OF_STOCK" | "DISCONTINUED" => {
     switch (status.toUpperCase()) {
       case "AVAILABLE":
         return "AVAILABLE";
@@ -65,7 +69,10 @@ export function FeaturedProducts() {
   // Tính toán sản phẩm hiển thị cho trang hiện tại
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
 
   const totalPages = Math.ceil(products.length / productsPerPage);
 
@@ -73,11 +80,14 @@ export function FeaturedProducts() {
     return (
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Có thể bạn thích</h2>
+          <h2 className="text-2xl font-bold">Các sản phẩm mới</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[...Array(6)].map((_, index) => (
-            <div key={index} className="h-64 bg-gray-100 animate-pulse rounded-md"></div>
+            <div
+              key={index}
+              className="h-64 bg-gray-100 animate-pulse rounded-md"
+            ></div>
           ))}
         </div>
       </section>
@@ -102,7 +112,9 @@ export function FeaturedProducts() {
             variant="outline"
             size="icon"
             className="rounded-full"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages || totalPages === 0}
           >
             <ChevronRight className="h-4 w-4" />

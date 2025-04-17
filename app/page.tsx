@@ -10,17 +10,16 @@ import { FooterLinks } from "@/components/footer-links";
 // import { ToastContainer } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 
-
 const featuredCategories = [
-  {
-    title: "CÁ KOI",
-    image: "/tancho.jfif",
-    href: "/products/category/3",
-  },
   {
     title: "CÁ GUPPY",
     image: "/Guppyfish_85.jpg",
     href: "/products/category/1",
+  },
+  {
+    title: "Cây thuỷ sinh",
+    image: "/cay.webp",
+    href: "/products/category/17",
   },
   {
     title: "CÁ BETTA",
@@ -46,7 +45,7 @@ export default function Home() {
           </div>
           <KoiPond />
           <BestSelling />
-          {/* <NewProducts /> */} 
+          {/* <NewProducts /> */}
           {/* <FooterLinks /> */}
           {/* <ToastContainer /> */}
         </div>

@@ -30,7 +30,7 @@ export default function CartPage() {
   useEffect(() => {
     const fetchCartItems = async () => {
       if (userId) {
-        try { 
+        try {
           const response = await cartItemService.getCartByUserId(userId);
           setCartItems(response.data.cartItems); // Assuming the response structure
           setTotalAmount(response.data.totalAmount); // Use total amount from API response
@@ -45,17 +45,29 @@ export default function CartPage() {
 
   // Add a function to calculate the total amount
   const calculateTotalAmount = (items: CartItem[]) => {
-    return items.reduce((total, item) => total + (item.productDTO.productPrice * item.quantity), 0);
+    return items.reduce(
+      (total, item) => total + item.productDTO.productPrice * item.quantity,
+      0
+    );
   };
 
   // Update the removeFromCart function to recalculate totalAmount
   const removeFromCart = async (cartItemId: number) => {
-    const cartId = await cartItemService.getCartByUserId(Number(localStorage.getItem("id")));
-    const itemToUpdate = cartItems.find(item => item.cartItemId === cartItemId);
+    const cartId = await cartItemService.getCartByUserId(
+      Number(localStorage.getItem("id"))
+    );
+    const itemToUpdate = cartItems.find(
+      (item) => item.cartItemId === cartItemId
+    );
     try {
       if (itemToUpdate?.productDTO.productId) {
-        await cartItemService.removeItemFromCart(cartId.data.cartId, itemToUpdate.productDTO.productId);
-        const updatedCartItems = cartItems.filter((item) => item.cartItemId !== cartItemId);
+        await cartItemService.removeItemFromCart(
+          cartId.data.cartId,
+          itemToUpdate.productDTO.productId
+        );
+        const updatedCartItems = cartItems.filter(
+          (item) => item.cartItemId !== cartItemId
+        );
         setCartItems(updatedCartItems);
         setTotalAmount(calculateTotalAmount(updatedCartItems)); // Recalculate total amount
       } else {
@@ -70,19 +82,27 @@ export default function CartPage() {
 
   // Update the updateQuantity function to prevent exceeding available stock
   const updateQuantity = async (cartItemId: number, amount: number) => {
-    const itemToUpdate = cartItems.find(item => item.cartItemId === cartItemId);
-    const cartId = await cartItemService.getCartByUserId(Number(localStorage.getItem("id")));
+    const itemToUpdate = cartItems.find(
+      (item) => item.cartItemId === cartItemId
+    );
+    const cartId = await cartItemService.getCartByUserId(
+      Number(localStorage.getItem("id"))
+    );
     if (itemToUpdate) {
       const newQuantity = Math.max(1, itemToUpdate.quantity + amount);
       // Check if the new quantity exceeds the available stock
       if (newQuantity > itemToUpdate.productDTO.productQuantity) {
-// toast err
+        // toast err
         toast.error("Không thể thêm nhiều hơn số lượng hàng có sẵn.");
         // console.error("Cannot add more than available stock.");
         return; // Exit the function if the new quantity exceeds available stock
       }
       try {
-        await cartItemService.updateItemQuantity(cartId.data.cartId, itemToUpdate.productDTO.productId, newQuantity);
+        await cartItemService.updateItemQuantity(
+          cartId.data.cartId,
+          itemToUpdate.productDTO.productId,
+          newQuantity
+        );
         const updatedCartItems = cartItems.map((item) =>
           item.cartItemId === cartItemId
             ? { ...item, quantity: newQuantity }
@@ -122,7 +142,9 @@ export default function CartPage() {
               >
                 <div className="w-32 h-32 overflow-hidden rounded-lg bg-gray-100">
                   <Image
-                    src={item.productDTO.images[0]?.imageUrl || "/placeholder.svg"}
+                    src={
+                      item.productDTO.images[0]?.imageUrl || "/placeholder.svg"
+                    }
                     alt={item.productDTO.productName}
                     width={128}
                     height={128}
@@ -130,13 +152,20 @@ export default function CartPage() {
                   />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <h2 className="text-lg font-medium">{item.productDTO.productName}</h2>
+                  <h2 className="text-lg font-medium">
+                    {item.productDTO.productName}
+                  </h2>
                   <p className="text-teal-600 font-semibold">
-                    {new Intl.NumberFormat('vi-VN').format(item.productDTO.productPrice)} VNĐ
+                    {new Intl.NumberFormat("vi-VN").format(
+                      item.productDTO.productPrice
+                    )}{" "}
+                    VNĐ
                   </p>
-                  <div className="text-gray-500">{item.productDTO.productDescription}</div>
-                  
-                  <div className="text-gray-500">Có sẵn: {item.productDTO.productQuantity}</div>
+                  {/* <div className="text-gray-500">{item.productDTO.productDescription}</div> */}
+
+                  <div className="text-gray-500">
+                    Có sẵn: {item.productDTO.productQuantity}
+                  </div>
                   <div className="flex items-center gap-4">
                     <Button
                       variant="outline"
@@ -173,19 +202,23 @@ export default function CartPage() {
           <div className="border-t pt-4 flex justify-between items-center">
             <span className="text-lg font-bold">Tổng tiền</span>
             <span className="text-xl font-bold text-teal-600">
-              {new Intl.NumberFormat('vi-VN').format(totalAmount)} VNĐ
+              {new Intl.NumberFormat("vi-VN").format(totalAmount)} VNĐ
             </span>
           </div>
 
           <div className="flex gap-4">
-            <Button 
-              className="flex-1 bg-teal-600 hover:bg-teal-700 text-white" 
+            <Button
+              className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
               onClick={handlePayment}
               disabled={isLoading} // Disable button while loading
             >
               {isLoading ? "Đang xử lý..." : "Đặt hàng"}
             </Button>
-            <Button variant="outline" className="flex-1" onClick={() => window.history.back()}>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => window.history.back()}
+            >
               Tiếp tục mua hàng
             </Button>
           </div>
