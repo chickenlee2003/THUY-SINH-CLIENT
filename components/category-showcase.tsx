@@ -55,7 +55,7 @@ export function CategoryShowcase() {
               </Card>
             ))}
           </div>
-        </div>  
+        </div>
       </section>
     );
   }
@@ -64,17 +64,20 @@ export function CategoryShowcase() {
     <section className="py-12 bg-gradient-to-r from-teal-50 to-blue-50">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold mb-4">Khám phá danh mục sản phẩm</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Khám phá danh mục sản phẩm
+          </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Chúng tôi cung cấp đa dạng các loại cá cảnh và phụ kiện chất lượng cao, 
-            được tuyển chọn kỹ lưỡng để đáp ứng nhu cầu của mọi người yêu thích thủy sinh.
+            Chúng tôi cung cấp đa dạng các loại cá cảnh và phụ kiện chất lượng
+            cao, được tuyển chọn kỹ lưỡng để đáp ứng nhu cầu của mọi người yêu
+            thích thủy sinh.
           </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((category) => (
-            <Link 
-              href={`/products/category/${category.categoryId}`} 
+            <Link
+              href={`/products/category/${category.categoryId}`}
               key={category.categoryId}
               className="group"
             >
@@ -114,4 +117,4 @@ export function CategoryShowcase() {
       </div>
     </section>
   );
-} 
+}

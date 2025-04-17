@@ -9,6 +9,14 @@ const categoryService = {
     const response = await apiClient.get(`/category-parent/${id}`);
     return response.data;
   },
+  getCategoritesActive: async () => {
+    const response = await apiClient.get(`/category/active`);
+    return response.data;
+  },
+  getCategoriesParentActive: async () => {
+    const response = await apiClient.get(`/category-parent/active`);
+    return response.data;
+  },
 };
 
 export default categoryService;

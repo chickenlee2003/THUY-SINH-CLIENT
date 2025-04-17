@@ -1,30 +1,14 @@
 "use client";
 
-// import Link from 'next/link'
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Fish,
-  Cookie,
-  Package,
-  Container,
-  Droplets,
-  Sprout,
-  FishIcon as MonsterFish,
-  ShellIcon as ShrimpIcon,
-} from "lucide-react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import categoryService from "@/services/category.service";
 
-const categories = [
-  { id: "category-parent/4", icon: Cookie, label: "Thức ăn" },
-  { id: "/category/17", icon: Sprout, label: "Cây thuỷ sinh" },
-  { id: "/category/4", icon: Container, label: "Hồ cá" },
-  { id: "/category-parent/1", icon: Droplets, label: "Cá nước ngọt" },
-  { id: "/category-parent/5", icon: MonsterFish, label: "Cá săn mồi" },
-  { id: "/category-parent/6", icon: ShrimpIcon, label: "Tép cảnh" },
-  { id: "/category/11", icon: Fish, label: "Một số loại cá khác" },
-  // { id: "marinefish", icon: Anchor, label: "Cá nước mặn" },
-  { id: "/", icon: Fish, label: "Tất cả sản phẩm" },
-];
+interface CategoryType {
+  id: string;
+  label: string;
+}
 
 interface CategorySidebarProps {
   activeCategory?: string;
@@ -37,6 +21,38 @@ export function CategorySidebar({
 }: CategorySidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [categories, setCategories] = useState<CategoryType[]>([
+    { id: "/", label: "Tất cả sản phẩm" },
+  ]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getCategoritesActive();
+
+        // Map API data to category format
+        const mappedCategories = data
+          .map((cat: any) => {
+            return {
+              id: `/category/${cat.categoryId}`,
+              label: cat.categoryName,
+            };
+          })
+          // Limit to max 11 categories (plus "All Products" = 12 total)
+          .slice(0, 11);
+
+        // Add "Tất cả sản phẩm" at the end
+        setCategories([
+          ...mappedCategories,
+          { id: "/", label: "Tất cả sản phẩm" },
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleCategoryClick = (categoryId: string) => {
     const params = new URLSearchParams(searchParams);
@@ -54,26 +70,22 @@ export function CategorySidebar({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <ul className="divide-y">
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <ul className="divide-y divide-gray-100">
         {categories.map((category) => (
           <li key={category.id}>
             <button
               onClick={() => handleCategoryClick(category.id)}
               className={cn(
-                "flex w-full items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors",
-                activeCategory === category.id && "bg-gray-50 text-teal-600"
+                "flex w-full items-center px-5 py-3.5 text-left transition-all duration-200",
+                "hover:bg-gray-50 hover:text-teal-700 hover:pl-6",
+                "focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-200",
+                activeCategory === category.id
+                  ? "bg-gradient-to-r from-teal-50 to-white border-l-4 border-teal-500 text-teal-700 font-medium"
+                  : "text-gray-700 border-l-4 border-transparent"
               )}
             >
-              <category.icon
-                className={cn(
-                  "h-5 w-5",
-                  activeCategory === category.id
-                    ? "text-teal-600"
-                    : "text-gray-500"
-                )}
-              />
-              <span>{category.label}</span>
+              <span className="text-sm sm:text-base">{category.label}</span>
             </button>
           </li>
         ))}

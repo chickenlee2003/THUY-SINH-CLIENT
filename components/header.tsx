@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { CameraInterface } from "@/components/camera-interface";
 import { FishRecognitionModal } from "@/components/fish-recognition-modal";
 import productService from "@/services/product.service";
+import categoryService from "@/services/category.service";
 
 // Define the product interface
 interface Product {
@@ -36,6 +37,14 @@ interface Product {
   }>;
 }
 
+// Define the CategoryParent interface
+interface CategoryParent {
+  categoryParentId: number;
+  categoryParentName: string;
+  categoryParentIcon: string;
+  status: string;
+}
+
 export function Header() {
   const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
@@ -49,9 +58,26 @@ export function Header() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [categoryParents, setCategoryParents] = useState<CategoryParent[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     setAvatar(localStorage.getItem("avatar"));
+
+    // Fetch category parents
+    const fetchCategoryParents = async () => {
+      try {
+        setLoadingCategories(true);
+        const data = await categoryService.getCategoriesParentActive();
+        setCategoryParents(data);
+      } catch (error) {
+        console.error("Failed to fetch category parents:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategoryParents();
   }, []);
 
   // Handle search input change
@@ -412,7 +438,7 @@ export function Header() {
         {/* Navigation */}
         <nav className="bg-teal-600 text-white">
           <div className="container mx-auto px-4">
-            <ul className="flex items-center">
+            <ul className="flex items-center overflow-x-auto">
               <li>
                 <Link href="/">
                   <Button
@@ -433,26 +459,29 @@ export function Header() {
                   </Button>
                 </Link>
               </li>
-              <li>
-                <Link href="/products/category-parent/1">
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-white hover:bg-teal-700"
-                  >
-                    Cá cảnh
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link href="/products/category-parent/2">
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-white hover:bg-teal-700"
-                  >
-                    Phụ kiện thuỷ sinh
-                  </Button>
-                </Link>
-              </li>
+
+              {/* Dynamic Category Parent Links */}
+              {loadingCategories
+                ? // Loading skeleton for categories
+                  [1, 2].map((i) => (
+                    <li key={`skeleton-${i}`} className="px-1">
+                      <div className="h-10 w-28 bg-teal-700/30 animate-pulse rounded"></div>
+                    </li>
+                  ))
+                : categoryParents.map((parent) => (
+                    <li key={parent.categoryParentId}>
+                      <Link
+                        href={`/products/category-parent/${parent.categoryParentId}`}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="text-white hover:text-white hover:bg-teal-700 whitespace-nowrap"
+                        >
+                          {parent.categoryParentName}
+                        </Button>
+                      </Link>
+                    </li>
+                  ))}
             </ul>
           </div>
         </nav>
