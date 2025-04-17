@@ -34,7 +34,7 @@ interface Product {
     imageId: number;
     imageUrl: string;
   }>;
-  reviews: ProductReview[]; 
+  reviews: ProductReview[];
   createdAt: string;
 }
 
@@ -59,10 +59,12 @@ export default function ProductPage({ params }: ProductPageProps) {
         // First get the product details
         const productResponse = await productService.getProductById(Number(id));
         setProduct(productResponse.data);
-        
+
         // Then try to get reviews separately to handle potential review API errors
         try {
-          const reviewsResponse = await reviewService.getProductReviews(Number(id));
+          const reviewsResponse = await reviewService.getProductReviews(
+            Number(id)
+          );
           setApiReviews(reviewsResponse);
         } catch (reviewErr) {
           console.error("Error fetching reviews:", reviewErr);
@@ -113,22 +115,28 @@ export default function ProductPage({ params }: ProductPageProps) {
           href={`/products/category/${product.categoryId}`}
           className="hover:text-teal-600"
         >
-          {product.categoryName} 
+          {product.categoryName}
         </Link>
         <ChevronRight className="h-4 w-4" />
         <span>{product.productName}</span>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <ProductImageGallery images={product.images} />
-        <ProductDetails {...product} />
+      <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-5">
+        <div className="md:col-span-2">
+          <ProductImageGallery images={product.images} />
+        </div>
+        <div className="md:col-span-3">
+          <ProductDetails {...product} />
+        </div>
       </div>
-      
+
       {/* Product Description */}
       <div className="mt-16">
         <h2 className="text-2xl font-bold mb-4">Mô tả sản phẩm</h2>
         <div className="prose max-w-none bg-gray-50 p-6 rounded-lg">
-          <div dangerouslySetInnerHTML={{ __html: product.productDescription }} />
+          <div
+            dangerouslySetInnerHTML={{ __html: product.productDescription }}
+          />
         </div>
       </div>
 
@@ -139,10 +147,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
       {/* Product Reviews */}
       <div className="mt-16">
-        <ProductReviews
-          productId={product.productId}
-          reviews={apiReviews}
-        />
+        <ProductReviews productId={product.productId} reviews={apiReviews} />
       </div>
     </div>
   );

@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Star, User, ChevronLeft, ChevronRight, Send } from "lucide-react";
+import {
+  Star,
+  User,
+  ChevronLeft,
+  ChevronRight,
+  Send,
+  ShoppingBag,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +16,7 @@ import { toast } from "react-toastify";
 import { formatDate } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import reviewService from "@/services/review.service";
+import orderService from "@/services/order.service";
 import type { ReviewResponse, ReviewSubmitData } from "@/types/backend";
 
 interface ProductReviewSectionProps {
@@ -30,6 +38,8 @@ export function ProductReviewSection({
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [checkingPurchase, setCheckingPurchase] = useState(false);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,6 +87,32 @@ export function ProductReviewSection({
       setIsLoading(false);
     }
   }, [productId, initialReviews]);
+
+  // Check if user has purchased the product
+  useEffect(() => {
+    async function checkPurchaseStatus() {
+      if (!isAuthenticated) return;
+
+      try {
+        setCheckingPurchase(true);
+        const userId = Number(localStorage.getItem("id"));
+        if (!userId) return;
+
+        const purchased = await orderService.hasUserPurchasedProduct(
+          userId,
+          productId
+        );
+        setHasPurchased(purchased);
+      } catch (error) {
+        console.error("Error checking purchase status:", error);
+        setHasPurchased(false);
+      } finally {
+        setCheckingPurchase(false);
+      }
+    }
+
+    checkPurchaseStatus();
+  }, [isAuthenticated, productId]);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -260,56 +296,83 @@ export function ProductReviewSection({
 
         {/* Review form */}
         {isAuthenticated ? (
-          <div className="flex-1">
-            <h3 className="text-lg font-medium mb-4">Viết đánh giá của bạn</h3>
-            <form onSubmit={handleSubmitReview} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Đánh giá của bạn
-                </label>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      className="focus:outline-none"
-                      onClick={() => setUserRating(star)}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                    >
-                      <Star
-                        className={`h-8 w-8 ${
-                          star <= (hoverRating || userRating)
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    </button>
-                  ))}
+          hasPurchased ? (
+            <div className="flex-1">
+              <h3 className="text-lg font-medium mb-4">
+                Viết đánh giá của bạn
+              </h3>
+              <form onSubmit={handleSubmitReview} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Đánh giá của bạn
+                  </label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        className="focus:outline-none"
+                        onClick={() => setUserRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                      >
+                        <Star
+                          className={`h-8 w-8 ${
+                            star <= (hoverRating || userRating)
+                              ? "text-yellow-400 fill-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label
-                  htmlFor="comment"
-                  className="block text-sm font-medium mb-2"
-                >
-                  Nhận xét của bạn
-                </label>
-                <Textarea
-                  id="comment"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
-                  className="min-h-[120px]"
-                />
-              </div>
+                <div>
+                  <label
+                    htmlFor="comment"
+                    className="block text-sm font-medium mb-2"
+                  >
+                    Nhận xét của bạn
+                  </label>
+                  <Textarea
+                    id="comment"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Chia sẻ trải nghiệm của bạn với sản phẩm này..."
+                    className="min-h-[120px]"
+                  />
+                </div>
 
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
-              </Button>
-            </form>
-          </div>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="flex-1 bg-gray-50 p-6 rounded-lg">
+              <h3 className="text-lg font-medium mb-4">
+                Viết đánh giá của bạn
+              </h3>
+              {checkingPurchase ? (
+                <p className="text-gray-500 mb-4">
+                  Đang kiểm tra lịch sử mua hàng...
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-2 mb-4 text-amber-600">
+                    <ShoppingBag size={20} />
+                    <p className="text-gray-700">
+                      Bạn cần mua sản phẩm này trước khi có thể đánh giá
+                    </p>
+                  </div>
+                  <Button asChild>
+                    <a href={`/checkout?productId=${productId}`}>Mua ngay</a>
+                  </Button>
+                </>
+              )}
+            </div>
+          )
         ) : (
           <div className="flex-1 bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-medium mb-4">Viết đánh giá của bạn</h3>

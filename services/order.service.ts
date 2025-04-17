@@ -3,7 +3,10 @@ import { OrderCreateRequestDto, OrderResponseDTO } from "@/types/backend"; // Ad
 
 const orderService = {
   // Create a new order
-  createOrder: async (userId: number, orderData: OrderCreateRequestDto): Promise<OrderResponseDTO> => {
+  createOrder: async (
+    userId: number,
+    orderData: OrderCreateRequestDto
+  ): Promise<OrderResponseDTO> => {
     const response = await apiClient.post(`/orders/user/${userId}`, orderData);
     return response.data;
   },
@@ -25,14 +28,28 @@ const orderService = {
   },
 
   updatePaymentStatus: async (orderId: number, status: string) => {
-    return apiClient.put(`/orders/payment/${orderId}`, { paymentStatus: status });
+    return apiClient.put(`/orders/payment/${orderId}`, {
+      paymentStatus: status,
+    });
   },
 
   // Cancel order
   cancelOrder: async (orderId: number) => {
-    return apiClient.put(`/orders/status/${orderId}`, { orderStatus: 'CANCELLED' });
-  }
+    return apiClient.put(`/orders/status/${orderId}`, {
+      orderStatus: "CANCELLED",
+    });
+  },
+
+  // Check if a user has purchased a specific product
+  hasUserPurchasedProduct: async (
+    userId: number,
+    productId: number
+  ): Promise<boolean> => {
+    const response = await apiClient.get(
+      `/orders/user/${userId}/has-purchased/product/${productId}`
+    );
+    return response.data;
+  },
 };
 
 export default orderService;
-

@@ -47,7 +47,9 @@ export function ProductCard({
         // We need to find the wishlist ID first
         const userId = 1; // TODO: Get from auth
         const response = await wishlistService.getWishlistByUserId(userId);
-        const wishlistItem = response.data.find(item => item.productId === productId);
+        const wishlistItem = response.data.find(
+          (item) => item.productId === productId
+        );
         if (wishlistItem) {
           await wishlistService.removeFromWishlist(wishlistItem.wishListId);
           toast.success("Đã xóa khỏi danh sách yêu thích");
@@ -68,9 +70,9 @@ export function ProductCard({
 
   return (
     <>
-      <Card className="group relative border-teal-600/20">
+      <Card className="group relative border-teal-600/20 transition-all duration-300 hover:border-teal-600/50 hover:shadow-md">
         {/* Hover Actions */}
-        <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 opacity-0 transition-all duration-300 group-hover:opacity-100">
           {/* <Button
             variant="ghost"
             size="icon"
@@ -87,7 +89,7 @@ export function ProductCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+            className="h-8 w-8 rounded-full bg-white/80 transition-transform duration-200 hover:scale-110 hover:bg-white hover:shadow-sm"
             onClick={(e) => {
               e.preventDefault();
               setShowAddToCart(true);
@@ -97,7 +99,7 @@ export function ProductCard({
           </Button>
         </div>
 
-        <Link href={`/product/${productId}`}>
+        <Link href={`/product/${productId}`} className="block overflow-hidden">
           <CardContent className="p-0">
             <div className="aspect-square overflow-hidden">
               <img
@@ -107,13 +109,14 @@ export function ProductCard({
                     : "/placeholder.svg"
                 }
                 alt={productName}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               />
             </div>
-            <div className="space-y-1 p-4">
-              <h3 className="text-center font-extralight">{productName}</h3>
-              <p className="text-center font-semibold text-teal-600">
-                {/* {new Intl.NumberFormat('vi-VN').format(productPrice)}  */}
+            <div className="space-y-1 p-4 transition-colors duration-300 group-hover:bg-slate-50">
+              <h3 className="text-center font-extralight group-hover:text-teal-800">
+                {productName}
+              </h3>
+              <p className="text-center font-semibold text-teal-600 transition-all duration-300 group-hover:text-teal-700">
                 {formatCurrency(productPrice)}
               </p>
             </div>
