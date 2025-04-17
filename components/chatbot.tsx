@@ -1,120 +1,125 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { MessageSquare, Send, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
-import { v4 as uuidv4 } from "uuid"
-import ChatbotService, { Message } from "@/services/chatbot.service"
+import { useState, useRef, useEffect } from "react";
+import { MessageSquare, Send, X, Maximize2, Minimize2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { v4 as uuidv4 } from "uuid";
+import ChatbotService, { Message } from "@/services/chatbot.service";
 
 export function Chatbot() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isWelcomeSent, setIsWelcomeSent] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [inputMessage, setInputMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [sessionId, setSessionId] = useState<string>("")
-  const messageContainerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false);
+  const [isWelcomeSent, setIsWelcomeSent] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
 
   // Khởi tạo session ID khi component được mount
   useEffect(() => {
-    const storedSessionId = localStorage.getItem('chatbot_session_id')
+    const storedSessionId = localStorage.getItem("chatbot_session_id");
     if (storedSessionId) {
-      setSessionId(storedSessionId)
+      setSessionId(storedSessionId);
     } else {
-      const newSessionId = uuidv4()
-      setSessionId(newSessionId)
-      localStorage.setItem('chatbot_session_id', newSessionId)
+      const newSessionId = uuidv4();
+      setSessionId(newSessionId);
+      localStorage.setItem("chatbot_session_id", newSessionId);
     }
-  }, [])
+  }, []);
 
   // Scroll to bottom when messages change
   useEffect(() => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   const toggleChatbot = async () => {
-    const newVisibility = !isVisible
-    setIsVisible(newVisibility)
-    
+    const newVisibility = !isVisible;
+    setIsVisible(newVisibility);
+
     if (newVisibility && !isWelcomeSent) {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const welcomeMessages = await ChatbotService.initializeChat(sessionId)
-        setMessages(welcomeMessages)
-        setIsWelcomeSent(true)
+        const welcomeMessages = await ChatbotService.initializeChat(sessionId);
+        setMessages(welcomeMessages);
+        setIsWelcomeSent(true);
       } catch (error) {
-        console.error("Error initializing chat:", error)
+        console.error("Error initializing chat:", error);
         setMessages([
           {
             sender: "bot",
-            message: "Xin chào! Chúng tôi có thể giúp gì cho bạn?"
-          }
-        ])
-        setIsWelcomeSent(true)
+            message: "Xin chào! Chúng tôi có thể giúp gì cho bạn?",
+          },
+        ]);
+        setIsWelcomeSent(true);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
-  }
+  };
 
   const addMessage = (sender: "user" | "bot", message: string) => {
-    setMessages((prev) => [...prev, { sender, message }])
-  }
+    setMessages((prev) => [...prev, { sender, message }]);
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (inputMessage.trim() === "") return
+    if (inputMessage.trim() === "") return;
 
     // Add user message
-    addMessage("user", inputMessage)
+    addMessage("user", inputMessage);
 
     // Clear input
-    const userMessage = inputMessage
-    setInputMessage("")
+    const userMessage = inputMessage;
+    setInputMessage("");
 
     // Get bot response
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const botResponses = await ChatbotService.sendMessage(userMessage, sessionId)
-      
+      const botResponses = await ChatbotService.sendMessage(
+        userMessage,
+        sessionId
+      );
+
       // Thêm từng tin nhắn từ bot vào danh sách tin nhắn
-      botResponses.forEach(response => {
-        addMessage(response.sender, response.message)
-      })
+      botResponses.forEach((response) => {
+        addMessage(response.sender, response.message);
+      });
     } catch (error) {
-      console.error("Error getting chatbot response:", error)
-      addMessage("bot", "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.")
+      console.error("Error getting chatbot response:", error);
+      addMessage("bot", "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Xử lý khi người dùng nhấp vào một lựa chọn nhanh
   const handleQuickReply = async (payload: string) => {
     // Hiển thị lựa chọn của người dùng
-    addMessage("user", payload)
-    
+    addMessage("user", payload);
+
     // Gửi payload đến Rasa
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const botResponses = await ChatbotService.sendMessage(payload, sessionId)
-      
+      const botResponses = await ChatbotService.sendMessage(payload, sessionId);
+
       // Thêm từng tin nhắn từ bot vào danh sách tin nhắn
-      botResponses.forEach(response => {
-        addMessage(response.sender, response.message)
-      })
+      botResponses.forEach((response) => {
+        addMessage(response.sender, response.message);
+      });
     } catch (error) {
-      console.error("Error getting chatbot response:", error)
-      addMessage("bot", "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.")
+      console.error("Error getting chatbot response:", error);
+      addMessage("bot", "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Hàm để hiển thị tin nhắn với định dạng
   const renderMessage = (message: string) => {
@@ -124,8 +129,8 @@ export function Chatbot() {
       const mainText = parts[0];
       const options = parts[1]
         .split("\n")
-        .filter(line => line.trim().startsWith("-"))
-        .map(line => line.trim().substring(2));
+        .filter((line) => line.trim().startsWith("-"))
+        .map((line) => line.trim().substring(2));
 
       return (
         <>
@@ -156,7 +161,11 @@ export function Chatbot() {
       return (
         <>
           <div>{mainText}</div>
-          <img src={imageUrl} alt="Bot image" className="mt-2 max-w-full rounded-md" />
+          <img
+            src={imageUrl}
+            alt="Bot image"
+            className="mt-2 max-w-full rounded-md"
+          />
         </>
       );
     }
@@ -165,29 +174,57 @@ export function Chatbot() {
     return message;
   };
 
+  const toggleExpandChat = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <>
       {/* Chatbot toggle button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button onClick={toggleChatbot} className="h-14 w-14 rounded-full bg-teal-600 hover:bg-teal-700 shadow-lg">
+        <Button
+          onClick={toggleChatbot}
+          className="h-14 w-14 rounded-full bg-teal-600 hover:bg-teal-700 shadow-lg"
+        >
           <MessageSquare className="h-6 w-6" />
         </Button>
       </div>
 
       {/* Chatbot container */}
       {isVisible && (
-        <div className="fixed bottom-6 right-6 z-50 w-[350px] sm:w-[400px] h-[500px] bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border">
+        <div
+          className={cn(
+            "fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-xl flex flex-col overflow-hidden border",
+            isExpanded
+              ? "w-[90vw] h-[80vh] sm:w-[70vw] sm:h-[70vh]"
+              : "w-[350px] sm:w-[400px] h-[500px]"
+          )}
+        >
           {/* Header */}
           <div className="bg-teal-600 text-white p-3 flex items-center justify-between">
             <h3 className="font-bold text-sm">Mi chat</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full text-white hover:bg-teal-700"
-              onClick={toggleChatbot}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full text-white hover:bg-teal-700"
+                onClick={toggleExpandChat}
+              >
+                {isExpanded ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full text-white hover:bg-teal-700"
+                onClick={toggleChatbot}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Messages container */}
@@ -201,7 +238,9 @@ export function Chatbot() {
                 key={index}
                 className={cn(
                   "p-3 rounded-lg max-w-[80%] break-words",
-                  msg.sender === "user" ? "bg-teal-600 text-white self-end" : "bg-gray-200 text-gray-800 self-start",
+                  msg.sender === "user"
+                    ? "bg-teal-600 text-white self-end"
+                    : "bg-gray-200 text-gray-800 self-start"
                 )}
               >
                 {renderMessage(msg.message)}
@@ -237,8 +276,8 @@ export function Chatbot() {
                 className="min-h-[44px] max-h-[120px] resize-none"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage(e)
+                    e.preventDefault();
+                    handleSendMessage(e);
                   }
                 }}
               />
@@ -255,5 +294,5 @@ export function Chatbot() {
         </div>
       )}
     </>
-  )
+  );
 }
